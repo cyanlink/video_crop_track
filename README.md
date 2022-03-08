@@ -11,8 +11,8 @@
 
 ### 示例代码
 
-```java
-VideoTrackWidget(
+```dart
+gen() => VideoTrackWidget(
   imgList: list,
   totalDuration: duration,
   onSelectDuration: (start, end) {},
@@ -30,5 +30,5 @@ VideoTrackWidget(
       ),
     );
   },
-),
+);
 ```

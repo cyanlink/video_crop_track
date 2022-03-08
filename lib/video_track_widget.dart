@@ -9,9 +9,9 @@
  */
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:video_crop_track/track_style.dart';
+import 'package:video_crop_track/no_fling_scroll_physics.dart';
 import 'package:video_crop_track/track_custom_paint.dart';
+import 'package:video_crop_track/track_style.dart';
 import 'package:video_crop_track/video_track_painter.dart';
 
 typedef OnSelectDuration<T> = void Function(Duration start, Duration end);
@@ -139,6 +139,8 @@ class VideoTrackWidgetState extends State<VideoTrackWidget>
                     onNotification: (notification) =>
                         _notificationListener(notification),
                     child: SingleChildScrollView(
+                      physics:
+                          ClampingScrollPhysics(parent: NoFlingScrollPhysics()),
                       scrollDirection: Axis.horizontal,
                       controller: _scrollController,
                       child: _getImageChild(),

@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Text('大于3分钟的视频展示'),
           SizedBox(height: 8),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 16),
+            margin: EdgeInsets.symmetric(horizontal: 50),
             child: VideoTrackWidget(
               key: key2,
               imgList: list2,

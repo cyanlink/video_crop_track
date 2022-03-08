@@ -105,6 +105,8 @@ class VideoTrackWidgetState extends State<VideoTrackWidget>
         : widget.totalDuration;
   }
 
+  bool isDragging = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -114,19 +116,36 @@ class VideoTrackWidgetState extends State<VideoTrackWidget>
         builder: (context, constraints) {
           _initView(constraints);
           return GestureDetector(
-            onHorizontalDragDown: (down) {
+            onHorizontalDragDown: (down) async {
               _onDown(down.localPosition);
+              isDragging = true;
+              Future(() async {
+                do {
+                  if (leftEarOffset <= Offset.zero + Offset(20, 0)) {
+                    final offset = _scrollController.offset;
+                    _scrollController.animateTo(offset - 20,
+                        duration: Duration(milliseconds: 20),
+                        curve: Curves.linear);
+                  }
+                  await Future.delayed(Duration(milliseconds: 20));
+                } while (isDragging && touchLeft);
+              });
+
               widget.dragDown?.call();
             },
             onHorizontalDragUpdate: (move) {
               _hideTimeline();
               _onMove(move.delta);
+
               _notificationResult();
               widget.dragUpdate?.call();
             },
             onHorizontalDragEnd: (up) {
               touchLeft = false;
               touchRight = false;
+              setState(() {
+                isDragging = false;
+              });
               _notificationResult();
               widget.dragEnd?.call();
             },

@@ -13,7 +13,15 @@ class _MyCropClipState extends State<MyCropClip> {
   Offset maxEndOffset = Offset(200, 0);
 
   Offset startOffset = Offset(0, 0);
-  Offset endOffset = Offset(50, 0);
+  Offset endOffset = Offset(120, 0);
+
+  Offset get paddedStartOffset => startOffset + Offset(handlerWidth, 0);
+  Offset get paddedEndOffset => endOffset + Offset(handlerWidth, 0);
+
+  final handlerWidth = 20.0; //ear width
+  mockHandler() => SizedBox(
+        width: handlerWidth,
+      );
 
   @override
   initState() {
@@ -25,6 +33,7 @@ class _MyCropClipState extends State<MyCropClip> {
     final controller = context.read<ScrollController>();
     return Stack(
       children: [
+        //底部的缩略图条
         Positioned(
             left: -startOffset.dx,
             top: 0,
@@ -34,24 +43,31 @@ class _MyCropClipState extends State<MyCropClip> {
                   (index) => Container(
                         width: 50,
                         height: 50,
-                        color: Colors.green,
+                        decoration: BoxDecoration(color:Colors.green, border: Border.all(color: Colors.black26)),
                         alignment: Alignment.center,
-                        child: Text(index.toString(), style: TextStyle(color: Colors.white),),
-                      )),
+                        child: Text(
+                          index.toString(),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ))
+              //前后添加占位符
+                ..insert(0, mockHandler())
+                ..add(mockHandler()),
             )),
+        //上层拖拽框选条
         Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             //leftEar
             GestureDetector(
-              onHorizontalDragUpdate: (update){
+              onHorizontalDragUpdate: (update) {
                 var originalOffset = startOffset;
                 setState(() {
                   startOffset += update.delta;
-                  if(startOffset <= Offset.zero){
+                  if (startOffset <= Offset.zero) {
                     startOffset = Offset.zero;
-                  }else if(startOffset >= endOffset - Offset(20, 0)){
+                  } else if (startOffset >= endOffset - Offset(20, 0)) {
                     startOffset = endOffset - Offset(20, 0);
                   }
                 });
@@ -60,9 +76,8 @@ class _MyCropClipState extends State<MyCropClip> {
                 //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
                 controller.jumpTo(controller.offset - realDelta.dx);
               },
-              child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.arrow_left)),
+              child:
+                  Container(width: handlerWidth, color: Colors.blue,child: Icon(Icons.arrow_left)),
             ),
             //content
             Container(
@@ -74,17 +89,16 @@ class _MyCropClipState extends State<MyCropClip> {
             ),
             //rightEar
             GestureDetector(
-              onHorizontalDragUpdate: (update){
+              onHorizontalDragUpdate: (update) {
                 setState(() {
                   endOffset += update.delta;
-                  if(endOffset >= maxEndOffset){
+                  if (endOffset >= maxEndOffset) {
                     endOffset = maxEndOffset;
                   }
                 });
               },
               child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.arrow_right)),
+                  width: handlerWidth,color: Colors.blue, child: Icon(Icons.arrow_right)),
             ),
           ],
         )

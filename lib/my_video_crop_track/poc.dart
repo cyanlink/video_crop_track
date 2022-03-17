@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_crop_track/my_video_crop_track/custom_scroll_track.dart';
 
 const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: MyWidget(),
+          child: CustomScrollTrack(),
         ),
       ),
     );

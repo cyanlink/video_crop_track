@@ -24,7 +24,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        height: 50,
+        height: 100,
         child: ChangeNotifierProvider<ScrollController>.value(
           value: _controller,
           child: CustomScrollView(
@@ -32,16 +32,19 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
               physics: NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
               controller: _controller,
               slivers: [
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return MyCropClip(
-                      clipIndex: index,
-                      showTrailingIcon: index == childCount - 1,
-                    );
-                  },
-                  childCount: childCount,
-                ))
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 100.0),
+                  sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return MyCropClip(
+                        clipIndex: index,
+                        showTrailingIcon: index == childCount - 1,
+                      );
+                    },
+                    childCount: childCount,
+                  )),
+                )
               ]),
         ),
       ),

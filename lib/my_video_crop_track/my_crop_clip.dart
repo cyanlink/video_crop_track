@@ -12,17 +12,17 @@ class MyCropClip extends StatefulWidget {
 }
 
 class _MyCropClipState extends State<MyCropClip> {
-  Offset maxEndOffset = Offset(400, 0);
+  Offset maxEndOffset = Offset(800, 0);
   final Offset minBetweenOffset = Offset(20.0, 0);
 
   Offset startOffset = Offset(0, 0);
-  Offset endOffset = Offset(120, 0);
+  Offset endOffset = Offset(350, 0);
 
   Offset get paddedStartOffset => startOffset + Offset(handlerWidth, 0);
 
   Offset get paddedEndOffset => endOffset + Offset(handlerWidth, 0);
 
-  final handlerWidth = 20.0; //ear width
+  final handlerWidth = 40.0; //ear width
 
   bool isLeftDragging = false, isRightDragging = false;
   bool _autoScrolling = false;
@@ -49,8 +49,8 @@ class _MyCropClipState extends State<MyCropClip> {
               children: List.generate(
                   8,
                   (index) => Container(
-                        width: 50,
-                        height: 50,
+                        width: 100,
+                        height: 100,
                         decoration: BoxDecoration(
                             color: Colors.green,
                             border: Border.all(color: Colors.black26)),
@@ -82,7 +82,8 @@ class _MyCropClipState extends State<MyCropClip> {
               },
               onHorizontalDragUpdate: (detail) {
                 makeLeftHandlerMovement(detail.delta, controller);
-                leftAutoScrollWhileOnMargin(controller, detail.globalPosition);
+                if(detail.delta <= Offset.zero)
+                  leftAutoScrollWhileOnMargin(controller, detail.globalPosition);
               },
               child: Container(
                 width: handlerWidth,
@@ -148,18 +149,35 @@ class _MyCropClipState extends State<MyCropClip> {
     var realDelta = startOffset - originalOffset;
 
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
-    await controller.animateTo(controller.offset - realDelta.dx, duration: Duration(milliseconds: 14), curve: Curves.linear);
+    controller.jumpTo(controller.offset - realDelta.dx);
   }
 
   leftAutoScrollWhileOnMargin(
       ScrollController controller, Offset globalPos) async {
     if (isLeftDragging&& ! _autoScrolling) {
-      if (globalPos <= Offset(50, 0)) {
+      if (globalPos.dx <= 100.0) {
         _autoScrolling = true;
-        await makeLeftHandlerMovement(Offset(20,0), controller);
+        await makeLeftHandlerAutoScroll(Offset(-4,0), controller);
         _autoScrolling = false;
         leftAutoScrollWhileOnMargin(controller, globalPos);
       }
     }
+  }
+
+  makeLeftHandlerAutoScroll(Offset delta, ScrollController controller) async {
+    var originalOffset = startOffset;
+    setState(() {
+      startOffset += delta;
+      if (startOffset <= Offset.zero) {
+        startOffset = Offset.zero;
+      } else if (startOffset >= endOffset - minBetweenOffset) {
+        startOffset = endOffset - minBetweenOffset;
+      }
+    });
+    var realDelta = startOffset - originalOffset;
+    await Future.delayed(Duration(milliseconds: 14));
+
+    //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
+    //await controller.animateTo(controller.offset - realDelta.dx, duration: Duration(milliseconds: 14), curve: Curves.linear);
   }
 }

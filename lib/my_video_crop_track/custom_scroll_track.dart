@@ -29,6 +29,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
   void didChangeDependencies() {
     super.didChangeDependencies();
     setupProgressListener();
+    driveTimelineWithPlayer();
   }
 
   @override
@@ -67,9 +68,10 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
     ]);
   }
 
-  double get timelineLength => _controller.hasClients?_controller.position.maxScrollExtent:-1;
+  double get timelineLength =>
+      _controller.hasClients ? _controller.position.maxScrollExtent : -1;
 
-  double get currentProgress => _controller.hasClients?_controller.offset:0;
+  double get currentProgress => _controller.hasClients ? _controller.offset : 0;
 
   //因为在两边增加了padding，最大可滚动范围就是timeline widget全部的长度
   double get progressPercentage => currentProgress / timelineLength * 100;
@@ -89,7 +91,6 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
 
   void scrollingStateListener() {
     if (_controller.hasClients) {
-      //TODO 我要的是用户是否在交互，而不是ScrollView实际有没有在滚动，考虑直接用NotificationListener
       _controller.position.isScrollingNotifier.addListener(() {
         bool isScrolling = _controller.position.isScrollingNotifier.value;
         //当用户滚动时，是时间线去驱动播放器跳转

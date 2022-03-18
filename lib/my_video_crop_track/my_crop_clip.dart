@@ -117,6 +117,7 @@ class _MyCropClipState extends State<MyCropClip> {
                     border: Border(right: BorderSide(color: Colors.black38))),
               ),
             ),
+            //TODO 添加转场按钮
           ],
         )
         //ThumbnailRow

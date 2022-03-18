@@ -29,7 +29,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
               scrollDirection: Axis.horizontal,
               physics: NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
               controller: _controller,
-              //TODO: real thing
+
               slivers: [
                 SliverList(
                     delegate: SliverChildBuilderDelegate(

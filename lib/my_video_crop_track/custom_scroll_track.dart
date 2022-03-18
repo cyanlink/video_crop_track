@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,16 +13,15 @@ class CustomScrollTrack extends StatefulWidget {
   State<CustomScrollTrack> createState() => _CustomScrollTrackState();
 }
 
-class _CustomScrollTrackState extends State<CustomScrollTrack> {
+class _CustomScrollTrackState extends State<CustomScrollTrack>
+    with WidgetsBindingObserver {
   final _controller = ScrollController();
-
-  double progressPercentage = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
   }
-
 
   static int childCount = 10;
 
@@ -32,50 +33,84 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 100,
-          child: ChangeNotifierProvider<ScrollController>.value(
-            value: _controller,
-            child: CustomScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
-                controller: _controller,
-                slivers: [
-                  SliverPadding(
-                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 2),
-                    sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return MyCropClip(
-                          clipIndex: index,
-                          showTrailingIcon: index != childCount - 1,
-                        );
-                      },
-                      childCount: childCount,
-                    )),
-                  )
-                ]),
-          ),
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      SizedBox(
+        height: 100,
+        child: ChangeNotifierProvider<ScrollController>.value(
+          value: _controller,
+          child: CustomScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
+              controller: _controller,
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width / 2),
+                  sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return MyCropClip(
+                        clipIndex: index,
+                        showTrailingIcon: index != childCount - 1,
+                      );
+                    },
+                    childCount: childCount,
+                  )),
+                )
+              ]),
         ),
-        Padding(padding: EdgeInsets.all(20),child: Text("Progress: $progressPercentage%"),)
-      ]
-    );
+      ),
+      Padding(
+        padding: EdgeInsets.all(20),
+        child: Text("Progress: $progressPercentage%"),
+      )
+    ]);
   }
+
+  double get timelineLength => _controller.hasClients?_controller.position.maxScrollExtent:-1;
+
+  double get currentProgress => _controller.hasClients?_controller.offset:0;
+
+  //因为在两边增加了padding，最大可滚动范围就是timeline widget全部的长度
+  double get progressPercentage => currentProgress / timelineLength * 100;
+
+  //是时间线控件驱动播放器，还是播放器的播放驱动时间线滚动
+  bool timelineDrivingPlayer = false;
+
+  Timer? player;
 
   setupProgressListener() {
     _controller.addListener(() {
-      final wholeLength = _controller.position.maxScrollExtent;
-
-      //因为在两边增加了padding，最大可滚动范围就是timeline widget全部的长度
-      final timelineLength = wholeLength;
-      final currentProgress = _controller.offset;
-
-      setState(() {
-        progressPercentage = currentProgress / timelineLength * 100;
-      });
+      setState(() {});
     });
+
+    _controller.addListener(scrollingStateListener);
+  }
+
+  void scrollingStateListener() {
+    if (_controller.hasClients) {
+      //TODO 我要的是用户是否在交互，而不是ScrollView实际有没有在滚动，考虑直接用NotificationListener
+      _controller.position.isScrollingNotifier.addListener(() {
+        bool isScrolling = _controller.position.isScrollingNotifier.value;
+        //当用户滚动时，是时间线去驱动播放器跳转
+        timelineDrivingPlayer = isScrolling;
+        timelineDrivingPlayer ? player?.cancel() : driveTimelineWithPlayer();
+      });
+      _controller.removeListener(scrollingStateListener);
+    }
+  }
+
+  driveTimelineWithPlayer() {
+    player = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      final currentPos = _controller.offset;
+      _controller.animateTo(currentPos + 0.2,
+          duration: Duration(milliseconds: 50), curve: Curves.linear);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
   }
 }

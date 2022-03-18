@@ -39,7 +39,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
                     (context, index) {
                       return MyCropClip(
                         clipIndex: index,
-                        showTrailingIcon: index == childCount - 1,
+                        showTrailingIcon: index != childCount - 1,
                       );
                     },
                     childCount: childCount,

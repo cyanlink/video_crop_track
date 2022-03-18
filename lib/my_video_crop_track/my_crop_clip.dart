@@ -15,6 +15,10 @@ class _MyCropClipState extends State<MyCropClip> {
   Offset maxEndOffset = Offset(800, 0);
   final Offset minBetweenOffset = Offset(20.0, 0);
 
+  bool get canExtendLeft => startOffset.dx > 0;
+
+  bool get canExtendRight => endOffset.dx < maxEndOffset.dx;
+
   Offset startOffset = Offset(0, 0);
   Offset endOffset = Offset(350, 0);
 
@@ -24,8 +28,12 @@ class _MyCropClipState extends State<MyCropClip> {
 
   final handlerWidth = 40.0; //ear width
 
-  bool isLeftDragging = false, isRightDragging = false;
+  bool isLeftExtending = false, isRightExtending = false;
   bool _autoScrolling = false;
+
+  static const autoScrollAreaWidth = 50.0;
+
+  late ScrollableState _scrollable;
 
   mockHandler() => SizedBox(
         width: handlerWidth,
@@ -34,6 +42,13 @@ class _MyCropClipState extends State<MyCropClip> {
   @override
   initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _scrollable = Scrollable.of(context)!;
   }
 
   @override
@@ -74,22 +89,24 @@ class _MyCropClipState extends State<MyCropClip> {
               //TODO 添加边缘扩展滚动
               //NOTE 其实并不困难，此处添加边缘滚动，等于持续在边缘长拖拽时，执行下面的正常拖动逻辑，同时修改startOffset和进行整体滚动，
               //和正常逻辑是一样的，可提取出来复用
-              onHorizontalDragDown: (detail) async {
-                isLeftDragging = true;
-              },
               onHorizontalDragEnd: (detail) {
-                isLeftDragging = false;
+                isLeftExtending = false;
               },
               onHorizontalDragUpdate: (detail) {
                 makeLeftHandlerMovement(detail.delta, controller);
-                if(detail.delta <= Offset.zero)
-                  leftAutoScrollWhileOnMargin(controller, detail.globalPosition);
+                if (detail.delta <= Offset.zero) {
+                  isLeftExtending = true;
+                  leftAutoScrollWhileOnMargin(
+                      controller, detail.globalPosition);
+                } else {
+                  isLeftExtending = false;
+                }
               },
               child: Container(
                 width: handlerWidth,
                 child: Icon(Icons.arrow_left),
                 decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: canExtendLeft ? Colors.blue : Colors.grey,
                     border: Border(left: BorderSide(color: Colors.black38))),
               ),
             ),
@@ -103,31 +120,36 @@ class _MyCropClipState extends State<MyCropClip> {
             ),
             //rightEar
             GestureDetector(
-              onHorizontalDragUpdate: (update) {
-                //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
-                setState(() {
-                  endOffset += update.delta;
-                  if (endOffset >= maxEndOffset) {
-                    endOffset = maxEndOffset;
-                  } else if (endOffset <= startOffset + minBetweenOffset) {
-                    endOffset = startOffset + minBetweenOffset;
-                  }
-                });
+              onHorizontalDragEnd: (detail) {
+                isRightExtending = false;
+              },
+              onHorizontalDragUpdate: (detail) {
+                makeRightHandlerMovement(detail.delta, controller);
+                if (detail.delta >= Offset.zero) {
+                  isRightExtending = true;
+                  rightAutoScrollWhileOnMargin(
+                      controller, detail.globalPosition);
+                } else {
+                  isRightExtending = false;
+                }
               },
               child: Container(
                 width: handlerWidth,
                 child: Icon(Icons.arrow_right),
                 decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: canExtendRight ? Colors.blue : Colors.grey,
                     border: Border(right: BorderSide(color: Colors.black38))),
               ),
             ),
             //TODO 添加转场按钮
             if (widget.showTrailingIcon)
-              IconButton(
-                  iconSize: 18.0,
-                  onPressed: () {},
-                  icon: Icon(Icons.add_circle_outlined))
+              Container(
+                color: Colors.lightBlue,
+                child: IconButton(
+                    iconSize: 18.0,
+                    onPressed: () {},
+                    icon: Icon(Icons.add_circle_outlined)),
+              )
           ],
         )
         //ThumbnailRow
@@ -138,14 +160,15 @@ class _MyCropClipState extends State<MyCropClip> {
 
   makeLeftHandlerMovement(Offset delta, ScrollController controller) async {
     var originalOffset = startOffset;
-    setState(() {
-      startOffset += delta;
-      if (startOffset <= Offset.zero) {
-        startOffset = Offset.zero;
-      } else if (startOffset >= endOffset - minBetweenOffset) {
-        startOffset = endOffset - minBetweenOffset;
-      }
-    });
+    if (mounted)
+      setState(() {
+        startOffset += delta;
+        if (startOffset <= Offset.zero) {
+          startOffset = Offset.zero;
+        } else if (startOffset >= endOffset - minBetweenOffset) {
+          startOffset = endOffset - minBetweenOffset;
+        }
+      });
     var realDelta = startOffset - originalOffset;
 
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
@@ -154,10 +177,14 @@ class _MyCropClipState extends State<MyCropClip> {
 
   leftAutoScrollWhileOnMargin(
       ScrollController controller, Offset globalPos) async {
-    if (isLeftDragging&& ! _autoScrolling) {
-      if (globalPos.dx <= 100.0) {
+    RenderBox renderBox = _scrollable.context.findRenderObject()! as RenderBox;
+    final globalRenderBox = renderBox.localToGlobal(Offset.zero);
+    final scrollableLeftEdge = globalRenderBox.dx;
+    //如果正在向左扩展（用户向左划动/最终按住停下），且没有在进行自动滚动
+    if (isLeftExtending && !_autoScrolling && canExtendLeft) {
+      if (globalPos.dx <= scrollableLeftEdge + autoScrollAreaWidth) {
         _autoScrolling = true;
-        await makeLeftHandlerAutoScroll(Offset(-4,0), controller);
+        await makeLeftHandlerAutoScroll(Offset(-4, 0), controller);
         _autoScrolling = false;
         leftAutoScrollWhileOnMargin(controller, globalPos);
       }
@@ -165,19 +192,61 @@ class _MyCropClipState extends State<MyCropClip> {
   }
 
   makeLeftHandlerAutoScroll(Offset delta, ScrollController controller) async {
-    var originalOffset = startOffset;
-    setState(() {
-      startOffset += delta;
-      if (startOffset <= Offset.zero) {
-        startOffset = Offset.zero;
-      } else if (startOffset >= endOffset - minBetweenOffset) {
-        startOffset = endOffset - minBetweenOffset;
-      }
-    });
-    var realDelta = startOffset - originalOffset;
+    if (mounted)
+      setState(() {
+        startOffset += delta;
+        if (startOffset <= Offset.zero) {
+          startOffset = Offset.zero;
+        } else if (startOffset >= endOffset - minBetweenOffset) {
+          startOffset = endOffset - minBetweenOffset;
+        }
+      });
+    //左侧扩展滚动不会导致前面全部Item长度变化，因此ScrollView的offset不用变
     await Future.delayed(Duration(milliseconds: 14));
+  }
 
-    //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
-    //await controller.animateTo(controller.offset - realDelta.dx, duration: Duration(milliseconds: 14), curve: Curves.linear);
+  makeRightHandlerMovement(Offset delta, ScrollController controller) {
+    if (mounted)
+      setState(() {
+        endOffset += delta;
+        if (endOffset >= maxEndOffset) {
+          endOffset = maxEndOffset;
+        } else if (endOffset <= startOffset + minBetweenOffset) {
+          endOffset = startOffset + minBetweenOffset;
+        }
+      });
+    //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
+  }
+
+  rightAutoScrollWhileOnMargin(
+      ScrollController controller, Offset globalPos) async {
+    RenderBox renderBox = _scrollable.context.findRenderObject()! as RenderBox;
+    final globalRenderBox = renderBox.localToGlobal(Offset.zero);
+    final scrollableLeftEdge = globalRenderBox.dx;
+    final scrollableRightEdge = scrollableLeftEdge + renderBox.size.width;
+    if (isRightExtending && !_autoScrolling && canExtendRight) {
+      if (globalPos.dx >= scrollableRightEdge - autoScrollAreaWidth) {
+        _autoScrolling = true;
+        await makeRightHandlerAutoScroll(Offset(4, 0), controller);
+        _autoScrolling = false;
+        rightAutoScrollWhileOnMargin(controller, globalPos);
+      }
+    }
+  }
+
+  makeRightHandlerAutoScroll(Offset delta, ScrollController controller) async {
+    if (mounted)
+      setState(() {
+        endOffset += delta;
+        if (endOffset >= maxEndOffset) {
+          endOffset = maxEndOffset;
+        } else if (endOffset <= startOffset + minBetweenOffset) {
+          endOffset = startOffset + minBetweenOffset;
+        }
+      });
+    //右侧扩展滚动会带动整个ScrollView滚动
+    await controller.animateTo(controller.offset + delta.dx,
+        duration: const Duration(milliseconds: 14), curve: Curves.linear);
+    //await Future.delayed(Duration(milliseconds: 14));
   }
 }

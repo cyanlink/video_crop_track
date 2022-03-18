@@ -18,6 +18,8 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
     super.initState();
   }
 
+  static int childCount = 10;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -29,16 +31,16 @@ class _CustomScrollTrackState extends State<CustomScrollTrack> {
               scrollDirection: Axis.horizontal,
               physics: NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
               controller: _controller,
-
               slivers: [
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     return MyCropClip(
                       clipIndex: index,
+                      showTrailingIcon: index == childCount - 1,
                     );
                   },
-                  childCount: 10,
+                  childCount: childCount,
                 ))
               ]),
         ),

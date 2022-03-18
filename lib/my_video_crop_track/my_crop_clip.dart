@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MyCropClip extends StatefulWidget {
-  MyCropClip({required this.clipIndex, Key? key}) : super(key: key);
+  MyCropClip({required this.clipIndex, this.showTrailingIcon = true, Key? key})
+      : super(key: key);
   final int clipIndex;
+  final bool showTrailingIcon;
 
   @override
   State<MyCropClip> createState() => _MyCropClipState();
@@ -23,6 +25,7 @@ class _MyCropClipState extends State<MyCropClip> {
   final handlerWidth = 20.0; //ear width
 
   bool isLeftDragging = false, isRightDragging = false;
+  bool _autoScrolling = false;
 
   mockHandler() => SizedBox(
         width: handlerWidth,
@@ -71,14 +74,15 @@ class _MyCropClipState extends State<MyCropClip> {
               //TODO 添加边缘扩展滚动
               //NOTE 其实并不困难，此处添加边缘滚动，等于持续在边缘长拖拽时，执行下面的正常拖动逻辑，同时修改startOffset和进行整体滚动，
               //和正常逻辑是一样的，可提取出来复用
-              onHorizontalDragStart: (detail) async {
+              onHorizontalDragDown: (detail) async {
                 isLeftDragging = true;
               },
               onHorizontalDragEnd: (detail) {
                 isLeftDragging = false;
               },
               onHorizontalDragUpdate: (detail) {
-                makeMovement(detail.delta, controller);
+                makeLeftHandlerMovement(detail.delta, controller);
+                leftAutoScrollWhileOnMargin(controller, detail.globalPosition);
               },
               child: Container(
                 width: handlerWidth,
@@ -118,6 +122,11 @@ class _MyCropClipState extends State<MyCropClip> {
               ),
             ),
             //TODO 添加转场按钮
+            if (widget.showTrailingIcon)
+              IconButton(
+                  iconSize: 18.0,
+                  onPressed: () {},
+                  icon: Icon(Icons.add_circle_outlined))
           ],
         )
         //ThumbnailRow
@@ -126,7 +135,7 @@ class _MyCropClipState extends State<MyCropClip> {
     );
   }
 
-  makeMovement(Offset delta, ScrollController controller) {
+  makeLeftHandlerMovement(Offset delta, ScrollController controller) async {
     var originalOffset = startOffset;
     setState(() {
       startOffset += delta;
@@ -139,6 +148,18 @@ class _MyCropClipState extends State<MyCropClip> {
     var realDelta = startOffset - originalOffset;
 
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
-    controller.jumpTo(controller.offset - realDelta.dx);
+    await controller.animateTo(controller.offset - realDelta.dx, duration: Duration(milliseconds: 14), curve: Curves.linear);
+  }
+
+  leftAutoScrollWhileOnMargin(
+      ScrollController controller, Offset globalPos) async {
+    if (isLeftDragging&& ! _autoScrolling) {
+      if (globalPos <= Offset(50, 0)) {
+        _autoScrolling = true;
+        await makeLeftHandlerMovement(Offset(20,0), controller);
+        _autoScrolling = false;
+        leftAutoScrollWhileOnMargin(controller, globalPos);
+      }
+    }
   }
 }

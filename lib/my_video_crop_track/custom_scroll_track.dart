@@ -37,7 +37,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       SizedBox(
-        height: 100,
+        height: 200,
         child: ChangeNotifierProvider<ScrollController>.value(
           value: _controller,
           child: CustomScrollView(
@@ -50,19 +50,30 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                       horizontal: MediaQuery.of(context).size.width / 2),
                   sliver: SliverToBoxAdapter(
                     child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Expanded(
-                            child: RowBuilder(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              itemBuilder: (c, index) =>
-                                  MyCropClip(clipIndex: index),
-                              itemCount: childCount,
+                      child: IntrinsicWidth(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: RowBuilder(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                itemBuilder: (c, index) =>
+                                    MyCropClip(clipIndex: index),
+                                itemCount: childCount,
+                              ),
                             ),
-                          )
-                        ],
+                            Expanded(
+                              //TODO 用真实的特效轨道替换
+                              child:Row(
+                                children: [
+                                  Expanded(child: Container(height:100, color: Colors.orange,))
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

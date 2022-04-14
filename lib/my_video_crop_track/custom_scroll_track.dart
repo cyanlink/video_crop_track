@@ -7,6 +7,8 @@ import 'package:video_crop_track/my_video_crop_track/column_builder.dart';
 import 'package:video_crop_track/my_video_crop_track/my_crop_clip.dart';
 import 'package:video_crop_track/no_fling_scroll_physics.dart';
 
+import 'effect_track_parts/effect_track.dart';
+
 class CustomScrollTrack extends StatefulWidget {
   CustomScrollTrack({Key? key}) : super(key: key);
 
@@ -53,7 +55,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                       child: IntrinsicWidth(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          //crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
                               child: RowBuilder(
@@ -64,14 +66,17 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                 itemCount: childCount,
                               ),
                             ),
-                            Expanded(
+                            Expanded(child: EffectTrack(
+
+                            ))
+                            /*Expanded(
                               //TODO 用真实的特效轨道替换
                               child:Row(
                                 children: [
                                   Expanded(child: Container(height:100, color: Colors.orange,))
                                 ],
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
                       ),

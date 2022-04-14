@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'effect_track.dart';
 
 class EffectBlock extends StatefulWidget {
-  EffectBlock({required this.clipIndex, this.showTrailingIcon = true, Key? key})
+  EffectBlock({required this.clipIndex, this.showTrailingIcon = true, Key? key, required this.parent})
       : super(key: key);
   final int clipIndex;
   final bool showTrailingIcon;
+  final EffectTrackState parent;
 
   @override
   State<EffectBlock> createState() => _EffectBlockState();
@@ -36,8 +38,8 @@ class _EffectBlockState extends State<EffectBlock> {
   late ScrollableState _scrollable;
 
   mockHandler() => SizedBox(
-    width: handlerWidth,
-  );
+        width: handlerWidth,
+      );
 
   @override
   initState() {
@@ -63,19 +65,19 @@ class _EffectBlockState extends State<EffectBlock> {
             child: Row(
               children: List.generate(
                   8,
-                      (index) => Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                        color: Colors.green,
-                        border: Border.all(color: Colors.black26)),
-                    alignment: Alignment.center,
-                    child: Text(
-                      index.toString(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ))
-              //前后添加占位符
+                  (index) => Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                            color: Colors.green,
+                            border: Border.all(color: Colors.black26)),
+                        alignment: Alignment.center,
+                        child: Text(
+                          index.toString(),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ))
+                //前后添加占位符
                 ..insert(0, mockHandler())
                 ..add(mockHandler()),
             )),
@@ -86,7 +88,7 @@ class _EffectBlockState extends State<EffectBlock> {
           children: [
             //leftEar
             GestureDetector(
-              //TODO 添加边缘扩展滚动
+              behavior: HitTestBehavior.opaque,
               //NOTE 其实并不困难，此处添加边缘滚动，等于持续在边缘长拖拽时，执行下面的正常拖动逻辑，同时修改startOffset和进行整体滚动，
               //和正常逻辑是一样的，可提取出来复用
               onHorizontalDragEnd: (detail) {
@@ -111,15 +113,19 @@ class _EffectBlockState extends State<EffectBlock> {
               ),
             ),
             //content
-            Container(
-              width: endOffset.dx - startOffset.dx,
-              decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.symmetric(
-                      horizontal: BorderSide(color: Colors.white, width: 2))),
+            longPressMover(
+              child: Container(
+                width: endOffset.dx - startOffset.dx,
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.symmetric(
+                        horizontal: BorderSide(color: Colors.white, width: 2))),
+              ),
             ),
+
             //rightEar
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onHorizontalDragEnd: (detail) {
                 isRightExtending = false;
               },
@@ -141,7 +147,6 @@ class _EffectBlockState extends State<EffectBlock> {
                     border: Border(right: BorderSide(color: Colors.black38))),
               ),
             ),
-            //TODO 添加转场按钮
             if (widget.showTrailingIcon)
               Container(
                 color: Colors.lightBlue,
@@ -170,9 +175,9 @@ class _EffectBlockState extends State<EffectBlock> {
         }
       });
     var realDelta = startOffset - originalOffset;
-
+    widget.parent.modifyStart(delta.dx);
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
-    controller.jumpTo(controller.offset - realDelta.dx);
+    //controller.jumpTo(controller.offset - realDelta.dx);
   }
 
   leftAutoScrollWhileOnMargin(
@@ -245,8 +250,17 @@ class _EffectBlockState extends State<EffectBlock> {
         }
       });
     //右侧扩展滚动会带动整个ScrollView滚动
-    await controller.animateTo(controller.offset + delta.dx,
-        duration: const Duration(milliseconds: 14), curve: Curves.linear);
-    //await Future.delayed(Duration(milliseconds: 14));
+    //await controller.animateTo(controller.offset + delta.dx, duration: const Duration(milliseconds: 14), curve: Curves.linear);
+  }
+
+  longPressMover({required Widget child}){
+    return GestureDetector(
+      onHorizontalDragUpdate: (update){
+        widget.parent.modifyStart(update.delta.dx);
+      },
+      child: child,
+    );
   }
 }
+
+

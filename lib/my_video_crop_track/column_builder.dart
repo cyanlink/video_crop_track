@@ -36,3 +36,48 @@ class FlexBuilder extends StatelessWidget {
     );
   }
 }
+
+class RowBuilder extends FlexBuilder {
+  RowBuilder({
+    Key? key,
+    required itemBuilder,
+    required itemCount,
+    mainAxisAlignment: MainAxisAlignment.start,
+    mainAxisSize: MainAxisSize.max,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    textDirection,
+    verticalDirection: VerticalDirection.down,
+  }) : super(
+            key: key,
+            itemBuilder: itemBuilder,
+            itemCount: itemCount,
+            direction: Axis.horizontal,
+            mainAxisAlignment: mainAxisAlignment,
+            mainAxisSize: mainAxisSize,
+            crossAxisAlignment: crossAxisAlignment,
+            textDirection: textDirection,
+            verticalDirection: verticalDirection);
+}
+
+
+class ColumnBuilder extends FlexBuilder {
+  ColumnBuilder({
+    Key? key,
+    required itemBuilder,
+    required itemCount,
+    mainAxisAlignment: MainAxisAlignment.start,
+    mainAxisSize: MainAxisSize.max,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    textDirection,
+    verticalDirection: VerticalDirection.down,
+  }) : super(
+      key: key,
+      itemBuilder: itemBuilder,
+      itemCount: itemCount,
+      direction: Axis.vertical,
+      mainAxisAlignment: mainAxisAlignment,
+      mainAxisSize: mainAxisSize,
+      crossAxisAlignment: crossAxisAlignment,
+      textDirection: textDirection,
+      verticalDirection: verticalDirection);
+}

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_crop_track/my_video_crop_track/column_builder.dart';
 import 'package:video_crop_track/my_video_crop_track/my_crop_clip.dart';
 import 'package:video_crop_track/no_fling_scroll_physics.dart';
 
@@ -47,16 +48,24 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                 SliverPadding(
                   padding: EdgeInsets.symmetric(
                       horizontal: MediaQuery.of(context).size.width / 2),
-                  sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return MyCropClip(
-                        clipIndex: index,
-                        showTrailingIcon: index != childCount - 1,
-                      );
-                    },
-                    childCount: childCount,
-                  )),
+                  sliver: SliverToBoxAdapter(
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Expanded(
+                            child: RowBuilder(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              itemBuilder: (c, index) =>
+                                  MyCropClip(clipIndex: index),
+                              itemCount: childCount,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 )
               ]),
         ),

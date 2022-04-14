@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_crop_track/my_video_crop_track/effect_track_parts/viewmodel.dart';
 import 'effect_track.dart';
 
 class EffectBlock extends StatefulWidget {
-  EffectBlock({required this.clipIndex, this.showTrailingIcon = true, Key? key, required this.parent})
+  EffectBlock({required this.clipIndex, this.showTrailingIcon = true, Key? key})
       : super(key: key);
   final int clipIndex;
   final bool showTrailingIcon;
-  final EffectTrackState parent;
 
   @override
   State<EffectBlock> createState() => _EffectBlockState();
@@ -175,7 +175,7 @@ class _EffectBlockState extends State<EffectBlock> {
         }
       });
     var realDelta = startOffset - originalOffset;
-    widget.parent.modifyStart(delta.dx);
+    context.read<SomeEffect>().startTime += delta.dx * secondsPerWidthUnit;
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
     //controller.jumpTo(controller.offset - realDelta.dx);
   }
@@ -254,11 +254,15 @@ class _EffectBlockState extends State<EffectBlock> {
   }
 
   longPressMover({required Widget child}){
-    return GestureDetector(
-      onHorizontalDragUpdate: (update){
-        widget.parent.modifyStart(update.delta.dx);
-      },
-      child: child,
+    return Consumer<SomeEffect>(
+
+      builder:(context, effect, _)=> GestureDetector(
+        onHorizontalDragUpdate: (update){
+          effect.endTime+=update.delta.dx * secondsPerWidthUnit;
+          effect.startTime+=update.delta.dx * secondsPerWidthUnit;
+        },
+        child: child,
+      ),
     );
   }
 }

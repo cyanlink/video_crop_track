@@ -20,7 +20,7 @@ class EffectTrackState extends State<EffectTrack> {
     final controller = context.read<ScrollController>();
     return ChangeNotifierProvider<EffectsViewModel>(
       create: (context) => EffectsViewModel(
-          [SomeEffect(5, 10), SomeEffect(15, 20), SomeEffect(25, 30)]),
+          [SomeEffect(5.0, 10.0), SomeEffect(15.0, 20.0), SomeEffect(25.0, 30.0)]),
       builder: (context, child) => Row(
         children: [
           ...itemListInRow(context)
@@ -32,12 +32,15 @@ class EffectTrackState extends State<EffectTrack> {
 
   List<Widget> itemListInRow(BuildContext context) {
     var effectsvm = context.watch<EffectsViewModel>();
-    var controller = context.watch<ScrollController>();
 
     final effects = effectsvm.effectList;
     List<Widget> widgets = [];
-    var lastTime = 0;
+    double lastTime = 0;
     for (var e in effects) {
+      //TODO fix the following monkey patch!
+      //TODO 仍然存在一个问题：修改effect不能更新依赖于effect list的这些spacer
+      if(e.startTime < lastTime)
+        e.startTime = lastTime;
       widgets.add(SizedBox(
         width: (e.startTime - lastTime) * widthUnitPerSecond,
       ));

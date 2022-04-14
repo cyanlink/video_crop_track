@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 
 class SomeEffect extends ChangeNotifier {
-  int _startTime, _endTime;
+  SomeEffect(double startTime, double endTime, {minDuration = 3.0})
+      : _startTime = startTime,
+        _endTime = endTime,
+        _minDuration = minDuration;
 
-  set startTime(time) {
+  double _startTime, _endTime, _minDuration;
+
+  set startTime(double time) {
     _startTime = time;
+    if (_startTime < 0) _startTime = 0;
     notifyListeners();
   }
 
-  get startTime => _startTime;
+  double get startTime => _startTime;
 
   set endTime(time) {
     _endTime = time;
+    final minTime = _startTime + _minDuration;
+    if (_endTime < minTime) _endTime = minTime;
     notifyListeners();
   }
 
   get endTime => _endTime;
-
-  SomeEffect(startTime, endTime)
-      : _startTime = startTime,
-        _endTime = endTime;
 }
 
 class EffectsViewModel extends ChangeNotifier {

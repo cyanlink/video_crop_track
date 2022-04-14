@@ -4,7 +4,7 @@ import 'package:video_crop_track/my_video_crop_track/effect_track_parts/viewmode
 import 'effect_track.dart';
 
 class EffectBlock extends StatefulWidget {
-  EffectBlock({required this.clipIndex, this.showTrailingIcon = true, Key? key})
+  EffectBlock({required this.clipIndex, this.showTrailingIcon = false, Key? key})
       : super(key: key);
   final int clipIndex;
   final bool showTrailingIcon;

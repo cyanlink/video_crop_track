@@ -175,7 +175,12 @@ class _EffectBlockState extends State<EffectBlock> {
         }
       });
     var realDelta = startOffset - originalOffset;
-    context.read<SomeEffect>().startTime += delta.dx * secondsPerWidthUnit;
+    final effect = context.read<SomeEffect>();
+    effect.startTime += delta.dx * secondsPerWidthUnit;
+
+    final vm = context.read<EffectsViewModel>();
+    final index = vm.effectList.indexOf(effect);
+    vm.modifyDurationBefore(index, delta.dx * secondsPerWidthUnit);
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
     //controller.jumpTo(controller.offset - realDelta.dx);
   }
@@ -206,6 +211,13 @@ class _EffectBlockState extends State<EffectBlock> {
           startOffset = endOffset - minBetweenOffset;
         }
       });
+
+    final effect = context.read<SomeEffect>();
+    effect.endTime += delta.dx * secondsPerWidthUnit;
+
+    final vm = context.read<EffectsViewModel>();
+    final index = vm.effectList.indexOf(effect);
+    vm.modifyDurationAfter(index, delta.dx * secondsPerWidthUnit);
     //左侧扩展滚动不会导致前面全部Item长度变化，因此ScrollView的offset不用变
     await Future.delayed(Duration(milliseconds: 14));
   }

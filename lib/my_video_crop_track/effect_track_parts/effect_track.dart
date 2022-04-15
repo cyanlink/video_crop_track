@@ -42,7 +42,7 @@ class EffectTrackState extends State<EffectTrack> {
       if(e.startTime < lastTime)
         e.startTime = lastTime;
       widgets.add(SizedBox(
-        width: (e.startTime - lastTime) * widthUnitPerSecond,
+        width: (effectsvm.getDurationBefore(effects.indexOf(e))) * widthUnitPerSecond,
       ));
       widgets.add(ChangeNotifierProvider<SomeEffect>.value(
           value: e,

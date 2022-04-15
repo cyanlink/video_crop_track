@@ -55,8 +55,18 @@ class EffectsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  modifyDurationBefore(int index, double delta){
+    durationBetween[index] += delta;
+    notifyListeners();
+  }
+
   setDurationAfter(int index, double duration) {
     durationBetween[index + 1] = duration;
+    notifyListeners();
+  }
+
+  modifyDurationAfter(int index, double delta){
+    durationBetween[index + 1] += delta;
     notifyListeners();
   }
 }

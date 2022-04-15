@@ -180,7 +180,7 @@ class _EffectBlockState extends State<EffectBlock> {
 
     final vm = context.read<EffectsViewModel>();
     final index = vm.effectList.indexOf(effect);
-    vm.modifyDurationBefore(index, delta.dx * secondsPerWidthUnit);
+    vm.safeModifyStartTimeAndDurationBefore(index, delta.dx * secondsPerWidthUnit);
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
     //controller.jumpTo(controller.offset - realDelta.dx);
   }
@@ -213,11 +213,11 @@ class _EffectBlockState extends State<EffectBlock> {
       });
 
     final effect = context.read<SomeEffect>();
-    effect.endTime += delta.dx * secondsPerWidthUnit;
+
 
     final vm = context.read<EffectsViewModel>();
     final index = vm.effectList.indexOf(effect);
-    vm.modifyDurationAfter(index, delta.dx * secondsPerWidthUnit);
+    vm.safeModifyEndTimeAndDurationAfter(index, delta.dx * secondsPerWidthUnit);
     //左侧扩展滚动不会导致前面全部Item长度变化，因此ScrollView的offset不用变
     await Future.delayed(Duration(milliseconds: 14));
   }
@@ -266,12 +266,13 @@ class _EffectBlockState extends State<EffectBlock> {
   }
 
   longPressMover({required Widget child}){
-    return Consumer<SomeEffect>(
+    return Consumer2<SomeEffect, EffectsViewModel>(
 
-      builder:(context, effect, _)=> GestureDetector(
+      builder:(context, effect, evm, _)=> GestureDetector(
         onHorizontalDragUpdate: (update){
-          effect.endTime+=update.delta.dx * secondsPerWidthUnit;
-          effect.startTime+=update.delta.dx * secondsPerWidthUnit;
+          final index = evm.effectList.indexOf(effect);
+          evm.safeModifyEndTimeAndDurationAfter(index, update.delta.dx * secondsPerWidthUnit);
+          evm.safeModifyStartTimeAndDurationBefore(index, update.delta.dx * secondsPerWidthUnit);
         },
         child: child,
       ),

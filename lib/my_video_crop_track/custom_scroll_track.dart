@@ -37,9 +37,8 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
 
   @override
   Widget build(BuildContext context) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      SizedBox(
-        height: 200,
+    return Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+      Expanded(
         child: ChangeNotifierProvider<ScrollController>.value(
           value: _controller,
           child: CustomScrollView(
@@ -57,7 +56,8 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                           mainAxisSize: MainAxisSize.min,
                           //crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Expanded(
+                            SizedBox(
+                              height: 100,
                               child: RowBuilder(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
@@ -66,7 +66,9 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                 itemCount: childCount,
                               ),
                             ),
-                            Expanded(child: EffectTrack(
+                            SizedBox(
+                                height: 50,
+                                child: EffectTrack(
 
                             ))
                             /*Expanded(

@@ -55,7 +55,7 @@ class EffectsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  modifyDurationBefore(int index, double delta){
+  modifyDurationBefore(int index, double delta) {
     durationBetween[index] += delta;
     notifyListeners();
   }
@@ -65,8 +65,28 @@ class EffectsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  modifyDurationAfter(int index, double delta){
+  modifyDurationAfter(int index, double delta) {
     durationBetween[index + 1] += delta;
+    notifyListeners();
+  }
+
+  safeModifyStartTimeAndDurationBefore(int index, double delta) {
+    final effect = effectList[index];
+    final originalDurBefore = durationBetween[index];
+    final val = originalDurBefore + delta;
+    final realDelta = val < 0 ? 0 : delta;
+    effect.startTime += realDelta;
+    durationBetween[index] += realDelta;
+    notifyListeners();
+  }
+
+  safeModifyEndTimeAndDurationAfter(int index, double delta) {
+    final effect = effectList[index];
+    final originalDurAfter = durationBetween[index + 1];
+    final val = originalDurAfter + delta;
+    final realDelta = val < 0 ? 0 : delta;
+    effect.endTime += realDelta;
+    durationBetween[index + 1] += realDelta;
     notifyListeners();
   }
 }

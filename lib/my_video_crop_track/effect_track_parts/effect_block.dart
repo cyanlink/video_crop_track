@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_crop_track/my_video_crop_track/effect_track_parts/viewmodel.dart';
+
 import 'effect_track.dart';
 
 class EffectBlock extends StatefulWidget {
-  EffectBlock({required this.clipIndex, this.showTrailingIcon = false, Key? key})
+  EffectBlock(
+      {required this.clipIndex, this.showTrailingIcon = false, Key? key})
       : super(key: key);
   final int clipIndex;
   final bool showTrailingIcon;
@@ -180,7 +182,8 @@ class _EffectBlockState extends State<EffectBlock> {
 
     final vm = context.read<EffectsViewModel>();
     final index = vm.effectList.indexOf(effect);
-    vm.safeModifyStartTimeAndDurationBefore(index, delta.dx * secondsPerWidthUnit);
+    vm.safeModifyStartTimeAndDurationBefore(
+        index, delta.dx * secondsPerWidthUnit);
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
     //controller.jumpTo(controller.offset - realDelta.dx);
   }
@@ -212,12 +215,6 @@ class _EffectBlockState extends State<EffectBlock> {
         }
       });
 
-    final effect = context.read<SomeEffect>();
-
-
-    final vm = context.read<EffectsViewModel>();
-    final index = vm.effectList.indexOf(effect);
-    vm.safeModifyEndTimeAndDurationAfter(index, delta.dx * secondsPerWidthUnit);
     //左侧扩展滚动不会导致前面全部Item长度变化，因此ScrollView的offset不用变
     await Future.delayed(Duration(milliseconds: 14));
   }
@@ -233,6 +230,12 @@ class _EffectBlockState extends State<EffectBlock> {
         }
       });
     //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
+
+    final effect = context.read<SomeEffect>();
+
+    final vm = context.read<EffectsViewModel>();
+    final index = vm.effectList.indexOf(effect);
+    vm.safeModifyEndTimeAndDurationAfter(index, delta.dx * secondsPerWidthUnit);
   }
 
   rightAutoScrollWhileOnMargin(
@@ -265,19 +268,20 @@ class _EffectBlockState extends State<EffectBlock> {
     //await controller.animateTo(controller.offset + delta.dx, duration: const Duration(milliseconds: 14), curve: Curves.linear);
   }
 
-  longPressMover({required Widget child}){
+  longPressMover({required Widget child}) {
     return Consumer2<SomeEffect, EffectsViewModel>(
-
-      builder:(context, effect, evm, _)=> GestureDetector(
-        onHorizontalDragUpdate: (update){
+      builder: (context, effect, evm, _) => GestureDetector(
+        onHorizontalDragUpdate: (update) {
           final index = evm.effectList.indexOf(effect);
-          evm.safeModifyEndTimeAndDurationAfter(index, update.delta.dx * secondsPerWidthUnit);
-          evm.safeModifyStartTimeAndDurationBefore(index, update.delta.dx * secondsPerWidthUnit);
+
+          //TODO 如果这里这么写，会导致整体向前拖拽时，后方间隔被强行拖大，应该进一步包装统一方法，检查它这个滑块是否真的被向前拖动，而不是到头了（前后任意一个duration为0）
+          evm.safeModifyEndTimeAndDurationAfter(
+              index, update.delta.dx * secondsPerWidthUnit);
+          evm.safeModifyStartTimeAndDurationBefore(
+              index, update.delta.dx * secondsPerWidthUnit);
         },
         child: child,
       ),
     );
   }
 }
-
-

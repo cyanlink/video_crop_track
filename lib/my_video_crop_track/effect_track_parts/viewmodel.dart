@@ -80,13 +80,15 @@ class EffectsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  //这里逻辑需要改，不能往后
   safeModifyEndTimeAndDurationAfter(int index, double delta) {
     final effect = effectList[index];
     final originalDurAfter = durationBetween[index + 1];
-    final val = originalDurAfter + delta;
-    final realDelta = val < 0 ? 0 : delta;
+    final pretestResult = originalDurAfter - delta;
+    final realDelta = pretestResult < 0 ? 0 : delta;
     effect.endTime += realDelta;
-    durationBetween[index + 1] += realDelta;
+    durationBetween[index + 1] -= realDelta;
     notifyListeners();
   }
 }

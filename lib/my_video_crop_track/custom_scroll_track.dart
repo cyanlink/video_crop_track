@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_crop_track/my_video_crop_track/column_builder.dart';
+import 'package:video_crop_track/my_video_crop_track/flex_builder.dart';
 import 'package:video_crop_track/my_video_crop_track/my_crop_clip.dart';
 import 'package:video_crop_track/no_fling_scroll_physics.dart';
 
@@ -127,11 +127,12 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
   }
 
   driveTimelineWithPlayer() {
-    player = Timer.periodic(Duration(milliseconds: 50), (timer) {
+    //TODO change back！
+    /*player = Timer.periodic(Duration(milliseconds: 50), (timer) {
       final currentPos = _controller.offset;
       _controller.animateTo(currentPos + 0.2,
           duration: Duration(milliseconds: 50), curve: Curves.linear);
-    });
+    });*/
   }
 
   @override

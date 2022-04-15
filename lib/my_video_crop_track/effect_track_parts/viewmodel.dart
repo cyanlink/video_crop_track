@@ -6,7 +6,8 @@ class SomeEffect extends ChangeNotifier {
         _endTime = endTime,
         _minDuration = minDuration;
 
-  double _startTime, _endTime, _minDuration;
+  double _startTime, _endTime;
+  final double _minDuration;
 
   set startTime(double time) {
     _startTime = time;
@@ -27,12 +28,35 @@ class SomeEffect extends ChangeNotifier {
 }
 
 class EffectsViewModel extends ChangeNotifier {
-  EffectsViewModel(this.effectList);
+  List<double> durationBetween;
+
+  EffectsViewModel(this.effectList)
+      : durationBetween = List.filled(effectList.length + 1, 0.0) {
+    double lastTime = 0;
+    for (final effect in effectList) {
+      int index = effectList.indexOf(effect);
+      durationBetween[index] = (effect.startTime - lastTime);
+    }
+  }
 
   final List<SomeEffect> effectList;
 
   addEffect(SomeEffect effect) {
     effectList.add(effect);
+    notifyListeners();
+  }
+
+  getDurationBefore(int index) {
+    return durationBetween[index];
+  }
+
+  setDurationBefore(int index, double duration) {
+    durationBetween[index] = duration;
+    notifyListeners();
+  }
+
+  setDurationAfter(int index, double duration) {
+    durationBetween[index + 1] = duration;
     notifyListeners();
   }
 }

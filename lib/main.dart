@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_crop_track/video_track_widget.dart';
 
-void main() {
+void m() {
   runApp(MyApp());
 }
 

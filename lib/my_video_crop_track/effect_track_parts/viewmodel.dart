@@ -96,3 +96,13 @@ class EffectsViewModel extends ChangeNotifier {
     return pretestResult < 0;
   }
 }
+
+
+class TimelineWidth extends ChangeNotifier{
+  double? _timelineWidth;
+  get timelineWidth => _timelineWidth;
+  set timelineWidth(w){
+    _timelineWidth = w;
+    notifyListeners();
+  }
+}

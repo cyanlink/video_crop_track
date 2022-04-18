@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_crop_track/my_video_crop_track/effect_track_parts/viewmodel.dart';
 import 'package:video_crop_track/my_video_crop_track/flex_builder.dart';
 import 'package:video_crop_track/my_video_crop_track/my_crop_clip.dart';
 import 'package:video_crop_track/no_fling_scroll_physics.dart';
@@ -35,64 +36,84 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
     driveTimelineWithPlayer();
   }
 
+  final timelineKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-      Expanded(
-        child: ChangeNotifierProvider<ScrollController>.value(
-          value: _controller,
-          child: CustomScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
-              controller: _controller,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width / 2),
-                  sliver: SliverToBoxAdapter(
-                    child: Center(
-                      child: IntrinsicWidth(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          //crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(
-                              height: 100,
-                              child: RowBuilder(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                itemBuilder: (c, index) =>
-                                    MyCropClip(clipIndex: index),
-                                itemCount: childCount,
-                              ),
-                            ),
-                            SizedBox(
-                                height: 50,
-                                child: EffectTrack(
-
-                            ))
-                            /*Expanded(
-                              //TODO 用真实的特效轨道替换
-                              child:Row(
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: ChangeNotifierProvider<ScrollController>.value(
+              value: _controller,
+              child: CustomScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics:
+                      NoFlingScrollPhysics(parent: ClampingScrollPhysics()),
+                  controller: _controller,
+                  slivers: [
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width / 2),
+                      sliver: SliverToBoxAdapter(
+                        child: Center(
+                          child: IntrinsicWidth(
+                            child: ChangeNotifierProvider<TimelineWidth>(
+                              create: (c) => TimelineWidth(),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                //crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Expanded(child: Container(height:100, color: Colors.orange,))
+                                  Builder(builder: (context) {
+                                    return NotificationListener(
+                                      onNotification: (notif) {
+                                        if (notif
+                                            is SizeChangedLayoutNotification) {
+                                          context
+                                                  .read<TimelineWidth>()
+                                                  .timelineWidth =
+                                              timelineKey
+                                                  .currentContext?.size?.width;
+                                          return true;
+                                        }
+                                        return false;
+                                      },
+                                      child: SizeChangedLayoutNotifier(
+                                        key: timelineKey,
+                                        child: SizedBox(
+                                          height: 100,
+                                          child: RowBuilder(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.max,
+                                            itemBuilder: (c, index) =>
+                                                MyCropClip(clipIndex: index),
+                                            itemCount: childCount,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                  Consumer<TimelineWidth>(
+                                      builder: (c, tw, child) => SizedBox(
+                                          height: tw.timelineWidth,
+                                          child: EffectTrack()))
                                 ],
                               ),
-                            ),*/
-                          ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                )
-              ]),
-        ),
-      ),
-      Padding(
-        padding: EdgeInsets.all(20),
-        child: Text("Progress: $progressPercentage%"),
-      )
-    ]);
+                    )
+                  ]),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Text("Progress: $progressPercentage%"),
+          )
+        ]);
   }
 
   double get timelineLength =>

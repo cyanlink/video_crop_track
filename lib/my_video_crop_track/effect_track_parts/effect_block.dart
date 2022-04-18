@@ -273,12 +273,21 @@ class _EffectBlockState extends State<EffectBlock> {
       builder: (context, effect, evm, _) => GestureDetector(
         onHorizontalDragUpdate: (update) {
           final index = evm.effectList.indexOf(effect);
-
-          //TODO 如果这里这么写，会导致整体向前拖拽时，后方间隔被强行拖大，应该进一步包装统一方法，检查它这个滑块是否真的被向前拖动，而不是到头了（前后任意一个duration为0）
-          evm.safeModifyEndTimeAndDurationAfter(
-              index, update.delta.dx * secondsPerWidthUnit);
-          evm.safeModifyStartTimeAndDurationBefore(
-              index, update.delta.dx * secondsPerWidthUnit);
+          //向左拖拽
+          if(update.delta.dx <= 0){
+            final leftReachLimit = evm.safeModifyStartTimeAndDurationBefore(
+                index, update.delta.dx * secondsPerWidthUnit);
+            if(!leftReachLimit) {
+              evm.safeModifyEndTimeAndDurationAfter(
+                  index, update.delta.dx * secondsPerWidthUnit);
+            }
+          } else {
+            final rightReachLimit = evm.safeModifyEndTimeAndDurationAfter(
+                index, update.delta.dx * secondsPerWidthUnit);
+            if(!rightReachLimit) evm.safeModifyStartTimeAndDurationBefore(
+                index, update.delta.dx * secondsPerWidthUnit);
+          }
+          //已修改1待测试 TODO 如果这里这么写，会导致整体向前拖拽时，后方间隔被强行拖大，应该进一步包装统一方法，检查它这个滑块是否真的被向前拖动，而不是到头了（前后任意一个duration为0）
         },
         child: child,
       ),

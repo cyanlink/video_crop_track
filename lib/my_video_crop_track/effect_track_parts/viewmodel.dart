@@ -70,7 +70,8 @@ class EffectsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  safeModifyStartTimeAndDurationBefore(int index, double delta) {
+
+  bool safeModifyStartTimeAndDurationBefore(int index, double delta) {
     final effect = effectList[index];
     final originalDurBefore = durationBetween[index];
     final val = originalDurBefore + delta;
@@ -78,11 +79,13 @@ class EffectsViewModel extends ChangeNotifier {
     effect.startTime += realDelta;
     durationBetween[index] += realDelta;
     notifyListeners();
+    return val < 0;
   }
 
 
   //这里逻辑需要改，不能往后
-  safeModifyEndTimeAndDurationAfter(int index, double delta) {
+  ///返回是否发生了"截断"，即后侧到头了
+  bool safeModifyEndTimeAndDurationAfter(int index, double delta) {
     final effect = effectList[index];
     final originalDurAfter = durationBetween[index + 1];
     final pretestResult = originalDurAfter - delta;
@@ -90,5 +93,6 @@ class EffectsViewModel extends ChangeNotifier {
     effect.endTime += realDelta;
     durationBetween[index + 1] -= realDelta;
     notifyListeners();
+    return pretestResult < 0;
   }
 }

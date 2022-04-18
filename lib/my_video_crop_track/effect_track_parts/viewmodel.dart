@@ -31,15 +31,21 @@ class SomeEffect extends ChangeNotifier {
 class EffectsViewModel extends ChangeNotifier {
   List<double> durationBetween;
 
-  EffectsViewModel(this.effectList)
-      : durationBetween = List.filled(effectList.length + 1, 0.0) {
+  EffectsViewModel(this.effectList,timelineDuration): _timelineDuration = timelineDuration,
+      durationBetween = List.filled(effectList.length + 1, 0.0) {
     double lastTime = 0;
     var index = 0;
     for (final effect in effectList) {
       durationBetween[index++] = (effect.startTime - lastTime);
     }
   }
+  double _timelineDuration;
+  set timelineDuration(dur){
+    _timelineDuration = dur;
+    notifyListeners();
+  }
 
+  get timelineDuration => _timelineDuration;
   final List<SomeEffect> effectList;
 
   addEffect(SomeEffect effect) {

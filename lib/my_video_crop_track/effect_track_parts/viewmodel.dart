@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_crop_track/my_video_crop_track/effect_track_parts/effect_track.dart';
 
 class SomeEffect extends ChangeNotifier {
   SomeEffect(double startTime, double endTime, {minDuration = 3.0})
@@ -33,9 +34,9 @@ class EffectsViewModel extends ChangeNotifier {
   EffectsViewModel(this.effectList)
       : durationBetween = List.filled(effectList.length + 1, 0.0) {
     double lastTime = 0;
+    var index = 0;
     for (final effect in effectList) {
-      int index = effectList.indexOf(effect);
-      durationBetween[index] = (effect.startTime - lastTime);
+      durationBetween[index++] = (effect.startTime - lastTime);
     }
   }
 
@@ -50,8 +51,8 @@ class EffectsViewModel extends ChangeNotifier {
     return durationBetween[index];
   }
 
-  setDurationBefore(int index, double duration) {
-    durationBetween[index] = duration;
+  setDurationAt(int index, double dur) {
+    durationBetween[index] = dur;
     notifyListeners();
   }
 
@@ -60,28 +61,21 @@ class EffectsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  setDurationAfter(int index, double duration) {
-    durationBetween[index + 1] = duration;
-    notifyListeners();
-  }
-
   modifyDurationAfter(int index, double delta) {
     durationBetween[index + 1] += delta;
     notifyListeners();
   }
 
-
   bool safeModifyStartTimeAndDurationBefore(int index, double delta) {
     final effect = effectList[index];
     final originalDurBefore = durationBetween[index];
-    final val = originalDurBefore + delta;
-    final realDelta = val < 0 ? 0 : delta;
+    final pretestResult = originalDurBefore + delta;
+    final realDelta = pretestResult < 0 ? 0 : delta;
     effect.startTime += realDelta;
     durationBetween[index] += realDelta;
     notifyListeners();
-    return val < 0;
+    return pretestResult < 0;
   }
-
 
   //这里逻辑需要改，不能往后
   ///返回是否发生了"截断"，即后侧到头了
@@ -97,12 +91,27 @@ class EffectsViewModel extends ChangeNotifier {
   }
 }
 
-
-class TimelineWidth extends ChangeNotifier{
+class TimelineWidth extends ChangeNotifier {
   double? _timelineWidth;
+
   get timelineWidth => _timelineWidth;
-  set timelineWidth(w){
+
+  set timelineWidth(w) {
     _timelineWidth = w;
     notifyListeners();
   }
+}
+
+class TimelineDuration extends ChangeNotifier {
+  TimelineDuration({required int clipCount}): clipDurations = List.filled(clipCount, 350 / widthUnitPerSecond);
+  List<double> clipDurations;
+
+  operator [](int index) => clipDurations[index];
+
+  operator []=(int index, double val) {
+    clipDurations[index] = val;
+    notifyListeners();
+  }
+
+  double get timelineDuration => clipDurations.reduce((value, element) => value + element);
 }

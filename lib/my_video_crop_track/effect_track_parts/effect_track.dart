@@ -19,10 +19,10 @@ class EffectTrackState extends State<EffectTrack> {
 
     return ChangeNotifierProvider<EffectsViewModel>(
       create: (context) => EffectsViewModel([
-        SomeEffect(5.0, 10.0),
+        SomeEffect(0.0, 7.0),
         SomeEffect(15.0, 20.0),
         SomeEffect(25.0, 30.0)
-      ]),
+      ], ),
       builder: (context, child) => Row(
         children: [...itemListInRow(context)],
       ),
@@ -44,6 +44,7 @@ class EffectTrackState extends State<EffectTrack> {
     }
     var lastWidth = timelineWidth.timelineWidth - lastTime * widthUnitPerSecond;
     if(lastWidth < 0) lastWidth = 0;
+
     widgets.add(SizedBox(width: lastWidth));
     return widgets;
   }

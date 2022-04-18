@@ -63,7 +63,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                               create: (c) => TimelineWidth(),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
-                                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Builder(builder: (context) {
                                     return NotificationListener(
@@ -83,13 +83,16 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                         key: timelineKey,
                                         child: SizedBox(
                                           height: 100,
-                                          child: RowBuilder(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.max,
-                                            itemBuilder: (c, index) =>
-                                                MyCropClip(clipIndex: index),
-                                            itemCount: childCount,
+                                          child: ChangeNotifierProvider<TimelineDuration>(
+                                            create: (_)=>TimelineDuration(clipCount: childCount),
+                                            child: RowBuilder(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.max,
+                                              itemBuilder: (c, index) =>
+                                                  MyCropClip(clipIndex: index),
+                                              itemCount: childCount,
+                                            ),
                                           ),
                                         ),
                                       ),

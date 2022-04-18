@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:video_crop_track/my_video_crop_track/effect_track_parts/effect_track.dart';
+import 'package:video_crop_track/my_video_crop_track/effect_track_parts/viewmodel.dart';
 
 class MyCropClip extends StatefulWidget {
   MyCropClip({required this.clipIndex, this.showTrailingIcon = true, Key? key})
@@ -23,6 +25,8 @@ class _MyCropClipState extends State<MyCropClip> {
   Offset endOffset = Offset(350, 0);
 
   Offset get paddedStartOffset => startOffset + Offset(handlerWidth, 0);
+
+  double get clipDuration => (endOffset - startOffset).dx / widthUnitPerSecond;
 
   Offset get paddedEndOffset => endOffset + Offset(handlerWidth, 0);
 
@@ -160,7 +164,7 @@ class _MyCropClipState extends State<MyCropClip> {
 
   makeLeftHandlerMovement(Offset delta, ScrollController controller) async {
     var originalOffset = startOffset;
-    if (mounted)
+    if (mounted) {
       setState(() {
         startOffset += delta;
         if (startOffset <= Offset.zero) {
@@ -169,6 +173,8 @@ class _MyCropClipState extends State<MyCropClip> {
           startOffset = endOffset - minBetweenOffset;
         }
       });
+      context.read<TimelineDuration>()[widget.clipIndex] = clipDuration;
+    }
     var realDelta = startOffset - originalOffset;
 
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
@@ -192,7 +198,7 @@ class _MyCropClipState extends State<MyCropClip> {
   }
 
   makeLeftHandlerAutoScroll(Offset delta, ScrollController controller) async {
-    if (mounted)
+    if (mounted) {
       setState(() {
         startOffset += delta;
         if (startOffset <= Offset.zero) {
@@ -201,12 +207,14 @@ class _MyCropClipState extends State<MyCropClip> {
           startOffset = endOffset - minBetweenOffset;
         }
       });
+      context.read<TimelineDuration>()[widget.clipIndex] = clipDuration;
+    }
     //左侧扩展滚动不会导致前面全部Item长度变化，因此ScrollView的offset不用变
     await Future.delayed(Duration(milliseconds: 14));
   }
 
   makeRightHandlerMovement(Offset delta, ScrollController controller) {
-    if (mounted)
+    if (mounted) {
       setState(() {
         endOffset += delta;
         if (endOffset >= maxEndOffset) {
@@ -215,6 +223,8 @@ class _MyCropClipState extends State<MyCropClip> {
           endOffset = startOffset + minBetweenOffset;
         }
       });
+      context.read<TimelineDuration>()[widget.clipIndex] = clipDuration;
+    }
     //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
   }
 
@@ -235,7 +245,7 @@ class _MyCropClipState extends State<MyCropClip> {
   }
 
   makeRightHandlerAutoScroll(Offset delta, ScrollController controller) async {
-    if (mounted)
+    if (mounted) {
       setState(() {
         endOffset += delta;
         if (endOffset >= maxEndOffset) {
@@ -244,6 +254,8 @@ class _MyCropClipState extends State<MyCropClip> {
           endOffset = startOffset + minBetweenOffset;
         }
       });
+      context.read<TimelineDuration>()[widget.clipIndex] = clipDuration;
+    }
     //右侧扩展滚动会带动整个ScrollView滚动
     await controller.animateTo(controller.offset + delta.dx,
         duration: const Duration(milliseconds: 14), curve: Curves.linear);

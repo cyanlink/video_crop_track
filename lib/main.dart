@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:video_crop_track/timeline_stack_experiment/timeline_from_rect_poc.dart';
 import 'package:video_crop_track/video_track_widget.dart';
 
-void m() {
-  runApp(MyApp());
+void main() {
+  runApp(TimelinePoc());
 }
 
 class MyApp extends StatelessWidget {

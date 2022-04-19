@@ -18,6 +18,7 @@ class _TimelinePocState extends State<TimelinePoc>
     with TickerProviderStateMixin {
   int? selectedIndex;
   ScrollController _controller = ScrollController();
+  Rect get rect => getRect(selectedIndex);
 
   @override
   void initState() {
@@ -27,14 +28,6 @@ class _TimelinePocState extends State<TimelinePoc>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Future.delayed(
-        Duration.zero,
-        () => _controller.position.isScrollingNotifier.addListener(() async {
-              while (_controller.position.isScrollingNotifier.value) {
-                setState(() {});
-                await Future.delayed(Duration(milliseconds: 10));
-              }
-            }));
   }
 
   @override
@@ -42,6 +35,10 @@ class _TimelinePocState extends State<TimelinePoc>
     return MaterialApp(
       home: Scaffold(
         body: Listener(
+          onPointerMove: (u){
+            setState(() {
+            });
+          },
           child: Stack(
             children: [
               ListView.builder(
@@ -68,10 +65,17 @@ class _TimelinePocState extends State<TimelinePoc>
                 },
                 itemCount: 20,
               ),
+
+              //TODO 问题：会遮挡ListView的滚动逻辑
               Positioned.fromRect(
-                  rect: getRect(selectedIndex),
+                  rect: rect,
                   child: GestureDetector(
+                      behavior: HitTestBehavior.deferToChild,
                       onTap: () => toggleColor(),
+                      onVerticalDragUpdate: (update) {
+                        _controller
+                            .jumpTo(_controller.offset - update.delta.dy);
+                      },
                       child: Container(color: color)))
             ],
           ),

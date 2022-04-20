@@ -47,6 +47,8 @@ class _EffectBlockState extends State<EffectBlock> {
   @override
   initState() {
     super.initState();
+    var effect = context.read<SomeEffect>();
+    endOffset = Offset(effect.duration * widthUnitPerSecond, 0);
   }
 
   @override

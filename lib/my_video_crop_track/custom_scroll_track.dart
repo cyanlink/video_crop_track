@@ -77,7 +77,7 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                         CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.max,
                                     itemBuilder: (c, index) =>
-                                        MyCropClip(clipIndex: index),
+                                        MyCropClip(clipIndex: index, showTrailingIcon: false,),
                                     itemCount: childCount,
                                   ),
                                 ),

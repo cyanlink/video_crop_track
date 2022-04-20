@@ -80,6 +80,6 @@ class EffectTrackState extends State<EffectTrack> {
 }
 
 const double secondsPerThumbnail = 5.0;
-const double thumbnailSize = 80.0;
+const double thumbnailSize = 100.0;
 const secondsPerWidthUnit = secondsPerThumbnail / thumbnailSize;
 const widthUnitPerSecond = 1 / secondsPerWidthUnit;

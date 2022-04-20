@@ -27,7 +27,7 @@ class SomeEffect extends ChangeNotifier {
 
   get endTime => _endTime;
 
-  get duration => _endTime - _startTime;
+  double get duration => _endTime - _startTime;
 }
 
 class EffectsViewModel extends ChangeNotifier {

@@ -69,6 +69,7 @@ class EffectsViewModel extends ChangeNotifier {
   }
 
   //返回真实变化，不会越界的RealDelta，时间，不是Offset！
+  //TODO 此处代码存在问题，导致总和不一致，需要修复
   double safeModifyStartTimeAndDurationBefore(int index, double delta) {
     final effect = effectList[index];
     final originalDurBefore = durationBetween[index];

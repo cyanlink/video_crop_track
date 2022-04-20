@@ -174,11 +174,10 @@ class _EffectBlockState extends State<EffectBlock> {
     var temp = startOffset + Offset(delta.dx, 0);
     if (temp >= endOffset - minBetweenOffset) {
       var valid = endOffset - minBetweenOffset;
-      delta -= temp - valid;
+      delta += valid - temp;
     }
 
     final effect = context.read<SomeEffect>();
-    effect.startTime += delta.dx * secondsPerWidthUnit;
     final vm = context.read<EffectsViewModel>();
     final index = vm.effectList.indexOf(effect);
     double leftRealDelta = vm.safeModifyStartTimeAndDurationBefore(

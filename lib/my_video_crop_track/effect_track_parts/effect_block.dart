@@ -105,8 +105,7 @@ class _EffectBlockState extends State<EffectBlock> {
                 makeLeftHandlerMovement(detail.delta, controller);
                 if (detail.delta <= Offset.zero) {
                   isLeftExtending = true;
-                  leftAutoScrollWhileOnMargin(
-                      controller, detail.globalPosition);
+                  //leftAutoScrollWhileOnMargin(controller, detail.globalPosition);
                 } else {
                   isLeftExtending = false;
                 }
@@ -140,8 +139,7 @@ class _EffectBlockState extends State<EffectBlock> {
                 makeRightHandlerMovement(detail.delta, controller);
                 if (detail.delta >= Offset.zero) {
                   isRightExtending = true;
-                  rightAutoScrollWhileOnMargin(
-                      controller, detail.globalPosition);
+                  //rightAutoScrollWhileOnMargin(controller, detail.globalPosition);
                 } else {
                   isRightExtending = false;
                 }

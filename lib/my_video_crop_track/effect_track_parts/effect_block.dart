@@ -91,7 +91,9 @@ class _EffectBlockState extends State<EffectBlock> {
           children: [
             //leftEar
             GestureDetector(
-              onTap: (){print("leftear tapped");},
+              onTap: () {
+                print("leftear tapped");
+              },
               behavior: HitTestBehavior.opaque,
 
               //NOTE 其实并不困难，此处添加边缘滚动，等于持续在边缘长拖拽时，执行下面的正常拖动逻辑，同时修改startOffset和进行整体滚动，
@@ -174,7 +176,8 @@ class _EffectBlockState extends State<EffectBlock> {
     final vm = context.read<EffectsViewModel>();
     final index = vm.effectList.indexOf(effect);
     double leftRealDelta = vm.safeModifyStartTimeAndDurationBefore(
-        index, delta.dx * secondsPerWidthUnit) *widthUnitPerSecond;
+            index, delta.dx * secondsPerWidthUnit) *
+        widthUnitPerSecond;
     if (mounted)
       setState(() {
         startOffset += Offset(leftRealDelta, 0);
@@ -184,8 +187,6 @@ class _EffectBlockState extends State<EffectBlock> {
           startOffset = endOffset - minBetweenOffset;
         }
       });
-
-
 
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
     //controller.jumpTo(controller.offset - realDelta.dx);
@@ -227,9 +228,11 @@ class _EffectBlockState extends State<EffectBlock> {
 
     final vm = context.read<EffectsViewModel>();
     final index = vm.effectList.indexOf(effect);
-    double rightRealDelta = vm.safeModifyEndTimeAndDurationAfter(index, delta.dx * secondsPerWidthUnit) * widthUnitPerSecond ;
+    double rightRealDelta = vm.safeModifyEndTimeAndDurationAfter(
+            index, delta.dx * secondsPerWidthUnit) *
+        widthUnitPerSecond;
 
-    if (mounted){
+    if (mounted) {
       setState(() {
         endOffset += Offset(rightRealDelta, 0);
         if (endOffset >= maxEndOffset) {
@@ -240,8 +243,6 @@ class _EffectBlockState extends State<EffectBlock> {
       });
     }
     //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
-
-
   }
 
   rightAutoScrollWhileOnMargin(
@@ -281,20 +282,20 @@ class _EffectBlockState extends State<EffectBlock> {
         onHorizontalDragUpdate: (update) {
           final index = evm.effectList.indexOf(effect);
           //向左拖拽
-          if(update.delta.dx <= 0){
+          if (update.delta.dx <= 0) {
             final leftRealDelta = evm.safeModifyStartTimeAndDurationBefore(
                 index, update.delta.dx * secondsPerWidthUnit);
-            if(leftRealDelta!=0) {
+            if (leftRealDelta != 0) {
               evm.safeModifyEndTimeAndDurationAfter(
                   index, update.delta.dx * secondsPerWidthUnit);
             }
           } else {
-
             //向右拖拽
             final rightRealDelta = evm.safeModifyEndTimeAndDurationAfter(
                 index, update.delta.dx * secondsPerWidthUnit);
-            if(rightRealDelta != 0) evm.safeModifyStartTimeAndDurationBefore(
-                index, update.delta.dx * secondsPerWidthUnit);
+            if (rightRealDelta != 0)
+              evm.safeModifyStartTimeAndDurationBefore(
+                  index, update.delta.dx * secondsPerWidthUnit);
           }
           //已修改1待测试 TODO 如果这里这么写，会导致整体向前拖拽时，后方间隔被强行拖大，应该进一步包装统一方法，检查它这个滑块是否真的被向前拖动，而不是到头了（前后任意一个duration为0）
         },

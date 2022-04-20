@@ -21,9 +21,9 @@ class EffectTrackState extends State<EffectTrack> {
     return ChangeNotifierProxyProvider<TimelineDuration, EffectsViewModel>(
       create: (context) => EffectsViewModel(
           [
-            SomeEffect(0.0, 7.0),
-            SomeEffect(15.0, 20.0),
-            //SomeEffect(25.0, 30.0)
+            SomeEffect(0.0, 5.0),
+            SomeEffect(10.0, 15.0),
+            SomeEffect(20.0, 25.0)
           ],
           Provider.of<TimelineDuration>(context, listen: false)
               .timelineDuration),

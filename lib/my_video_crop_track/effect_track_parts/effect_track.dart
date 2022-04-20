@@ -44,15 +44,13 @@ class EffectTrackState extends State<EffectTrack> {
     double lastTime = 0;
     var index = 0;
     for (var e in effects) {
-      //TODO fix the following monkey patch!
-      //TODO 仍然存在一个问题：修改effect不能更新依赖于effect list的这些spacer
       if (e.startTime < lastTime) e.startTime = lastTime;
       widgets.add(customizedSpacerRow(e, effectsvm, index++));
       lastTime = e.endTime;
     }
     widgets.add(
       //最后一个补齐Widget，使用Expanded防止overflow问题，
-      Expanded(
+      Flexible(
         child: SizedBox(
           width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
 
@@ -69,10 +67,8 @@ class EffectTrackState extends State<EffectTrack> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(
-            child: SizedBox(
-              width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
-            ),
+          SizedBox(
+            width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
           ),
           EffectBlock(clipIndex: index)
         ],

@@ -171,6 +171,12 @@ class _EffectBlockState extends State<EffectBlock> {
   }
 
   makeLeftHandlerMovement(Offset delta, ScrollController controller) async {
+    var temp = startOffset + Offset(delta.dx, 0);
+    if (temp >= endOffset - minBetweenOffset) {
+      var valid = endOffset - minBetweenOffset;
+      delta -= temp - valid;
+    }
+
     final effect = context.read<SomeEffect>();
     effect.startTime += delta.dx * secondsPerWidthUnit;
     final vm = context.read<EffectsViewModel>();
@@ -178,16 +184,10 @@ class _EffectBlockState extends State<EffectBlock> {
     double leftRealDelta = vm.safeModifyStartTimeAndDurationBefore(
             index, delta.dx * secondsPerWidthUnit) *
         widthUnitPerSecond;
-    if (mounted)
-      setState(() {
-        startOffset += Offset(leftRealDelta, 0);
-        if (startOffset <= Offset.zero) {
-          startOffset = Offset.zero;
-        } else if (startOffset >= endOffset - minBetweenOffset) {
-          startOffset = endOffset - minBetweenOffset;
-        }
-      });
 
+    setState(() {
+      startOffset += Offset(leftRealDelta, 0);
+    });
     //左耳朵向前移动，dx为-，整个ScrollView应对应向后滚动，左耳朵向后移动，dx为+，ScrollView向前滚动
     //controller.jumpTo(controller.offset - realDelta.dx);
   }
@@ -224,6 +224,11 @@ class _EffectBlockState extends State<EffectBlock> {
   }
 
   makeRightHandlerMovement(Offset delta, ScrollController controller) {
+    var temp = endOffset + Offset(delta.dx, 0);
+    if (temp < startOffset + minBetweenOffset) {
+      var valid = startOffset + minBetweenOffset;
+      delta += valid - temp;
+    }
     final effect = context.read<SomeEffect>();
 
     final vm = context.read<EffectsViewModel>();
@@ -231,17 +236,10 @@ class _EffectBlockState extends State<EffectBlock> {
     double rightRealDelta = vm.safeModifyEndTimeAndDurationAfter(
             index, delta.dx * secondsPerWidthUnit) *
         widthUnitPerSecond;
+    setState(() {
+      endOffset += Offset(rightRealDelta, 0);
+    });
 
-    if (mounted) {
-      setState(() {
-        endOffset += Offset(rightRealDelta, 0);
-        if (endOffset >= maxEndOffset) {
-          endOffset = maxEndOffset;
-        } else if (endOffset <= startOffset + minBetweenOffset) {
-          endOffset = startOffset + minBetweenOffset;
-        }
-      });
-    }
     //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
   }
 
@@ -297,7 +295,6 @@ class _EffectBlockState extends State<EffectBlock> {
               evm.safeModifyStartTimeAndDurationBefore(
                   index, update.delta.dx * secondsPerWidthUnit);
           }
-          //已修改1待测试 TODO 如果这里这么写，会导致整体向前拖拽时，后方间隔被强行拖大，应该进一步包装统一方法，检查它这个滑块是否真的被向前拖动，而不是到头了（前后任意一个duration为0）
         },
         child: child,
       ),

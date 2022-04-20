@@ -82,12 +82,10 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                   ),
                                 ),
                               ),
-                              Flexible(
-                                child: SizedBox(
-                                    //width: tw.timelineWidth,
-                                    height: 50,
-                                    child: EffectTrack()),
-                              ),
+                              SizedBox(
+                                  //width: tw.timelineWidth,
+                                  height: 50,
+                                  child: EffectTrack()),
                             ]),
                           ),
                         ),

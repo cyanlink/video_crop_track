@@ -69,8 +69,10 @@ class EffectTrackState extends State<EffectTrack> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
+          Flexible(
+            child: SizedBox(
+              width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
+            ),
           ),
           EffectBlock(clipIndex: index)
         ],

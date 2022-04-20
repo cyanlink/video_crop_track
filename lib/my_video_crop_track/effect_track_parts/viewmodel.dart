@@ -91,9 +91,10 @@ class EffectsViewModel extends ChangeNotifier {
 }
 
 class TimelineWidth extends ChangeNotifier {
+  TimelineWidth();
   double? _timelineWidth;
 
-  get timelineWidth => _timelineWidth;
+  double get timelineWidth => _timelineWidth??double.infinity;
 
   set timelineWidth(w) {
     _timelineWidth = w;

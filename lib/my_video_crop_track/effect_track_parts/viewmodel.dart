@@ -31,17 +31,25 @@ class SomeEffect extends ChangeNotifier {
 class EffectsViewModel extends ChangeNotifier {
   List<double> durationBetween;
 
-  EffectsViewModel(this.effectList,timelineDuration): _timelineDuration = timelineDuration,
-      durationBetween = List.filled(effectList.length + 1, 0.0) {
+  EffectsViewModel(this.effectList, timelineDuration)
+      : _timelineDuration = timelineDuration,
+        durationBetween = List.filled(effectList.length + 1, 0.0) {
     double lastTime = 0;
     var index = 0;
     for (final effect in effectList) {
       durationBetween[index++] = (effect.startTime - lastTime);
     }
+    durationBetween[index] = _timelineDuration - lastTime;
   }
+
   double _timelineDuration;
-  set timelineDuration(dur){
+
+  set timelineDuration(dur) {
+    var oldTimelineDuration = _timelineDuration;
     _timelineDuration = dur;
+    var diff = _timelineDuration - oldTimelineDuration;
+    durationBetween.last += diff;
+    if(durationBetween.last<0) durationBetween.last = 0;
     notifyListeners();
   }
 
@@ -55,21 +63,6 @@ class EffectsViewModel extends ChangeNotifier {
 
   getDurationBefore(int index) {
     return durationBetween[index];
-  }
-
-  setDurationAt(int index, double dur) {
-    durationBetween[index] = dur;
-    notifyListeners();
-  }
-
-  modifyDurationBefore(int index, double delta) {
-    durationBetween[index] += delta;
-    notifyListeners();
-  }
-
-  modifyDurationAfter(int index, double delta) {
-    durationBetween[index + 1] += delta;
-    notifyListeners();
   }
 
   bool safeModifyStartTimeAndDurationBefore(int index, double delta) {
@@ -109,7 +102,8 @@ class TimelineWidth extends ChangeNotifier {
 }
 
 class TimelineDuration extends ChangeNotifier {
-  TimelineDuration({required int clipCount}): clipDurations = List.filled(clipCount, 350 / widthUnitPerSecond);
+  TimelineDuration({required int clipCount})
+      : clipDurations = List.filled(clipCount, 350 / widthUnitPerSecond);
   List<double> clipDurations;
 
   operator [](int index) => clipDurations[index];
@@ -119,5 +113,6 @@ class TimelineDuration extends ChangeNotifier {
     notifyListeners();
   }
 
-  double get timelineDuration => clipDurations.reduce((value, element) => value + element);
+  double get timelineDuration =>
+      clipDurations.reduce((value, element) => value + element);
 }

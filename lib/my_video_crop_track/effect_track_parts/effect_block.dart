@@ -16,6 +16,7 @@ class EffectBlock extends StatefulWidget {
 }
 
 class _EffectBlockState extends State<EffectBlock> {
+  //TODO 此处逻辑为由于Clip有结束时间限制，现在Effect可能没有这个限制，而只受到Duration的限制
   Offset maxEndOffset = Offset(800, 0);
   final Offset minBetweenOffset = Offset(20.0, 0);
 
@@ -220,6 +221,12 @@ class _EffectBlockState extends State<EffectBlock> {
   }
 
   makeRightHandlerMovement(Offset delta, ScrollController controller) {
+    final effect = context.read<SomeEffect>();
+
+    final vm = context.read<EffectsViewModel>();
+    final index = vm.effectList.indexOf(effect);
+    bool rightReachLimit = vm.safeModifyEndTimeAndDurationAfter(index, delta.dx * secondsPerWidthUnit);
+
     if (mounted)
       setState(() {
         endOffset += delta;
@@ -231,11 +238,7 @@ class _EffectBlockState extends State<EffectBlock> {
       });
     //右侧耳朵的移动不会影响外侧ScrollView，所以不用手动滚动
 
-    final effect = context.read<SomeEffect>();
 
-    final vm = context.read<EffectsViewModel>();
-    final index = vm.effectList.indexOf(effect);
-    vm.safeModifyEndTimeAndDurationAfter(index, delta.dx * secondsPerWidthUnit);
   }
 
   rightAutoScrollWhileOnMargin(

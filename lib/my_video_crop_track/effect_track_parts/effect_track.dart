@@ -52,7 +52,7 @@ class EffectTrackState extends State<EffectTrack> {
     }
     widgets.add(
       //最后一个补齐Widget，使用Expanded防止overflow问题，
-      Dominant.flexible(
+      Expanded(
         child: SizedBox(
           width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
 

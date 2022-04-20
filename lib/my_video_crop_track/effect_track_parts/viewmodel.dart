@@ -53,6 +53,7 @@ class EffectsViewModel extends ChangeNotifier {
     var diff = _timelineDuration - oldTimelineDuration;
     durationBetween.last += diff;
     if (durationBetween.last < 0) {
+      //TODO 这个逻辑会导致拖拽时间线调整时长时，部分duration被吞掉，
       durationBetween.last = 0;
     }
     notifyListeners();
@@ -71,7 +72,6 @@ class EffectsViewModel extends ChangeNotifier {
   }
 
   //返回真实变化，不会越界的RealDelta，时间，不是Offset！
-  //TODO 此处代码存在问题，导致总和不一致，需要修复
   double safeModifyStartTimeAndDurationBefore(int index, double delta) {
     final effect = effectList[index];
     final originalDurBefore = durationBetween[index];

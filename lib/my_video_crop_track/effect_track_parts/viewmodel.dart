@@ -65,28 +65,29 @@ class EffectsViewModel extends ChangeNotifier {
     return durationBetween[index];
   }
 
-  bool safeModifyStartTimeAndDurationBefore(int index, double delta) {
+  //返回真实变化，不会越界的RealDelta，时间，不是Offset！
+  double safeModifyStartTimeAndDurationBefore(int index, double delta) {
     final effect = effectList[index];
     final originalDurBefore = durationBetween[index];
     final pretestResult = originalDurBefore + delta;
-    final realDelta = pretestResult < 0 ? 0 : delta;
+    final realDelta = pretestResult <= 0 ? originalDurBefore : delta;
     effect.startTime += realDelta;
     durationBetween[index] += realDelta;
     notifyListeners();
-    return pretestResult < 0;
+    return realDelta;
   }
 
   //这里逻辑需要改，不能往后
-  ///返回是否发生了"截断"，即后侧到头了
-  bool safeModifyEndTimeAndDurationAfter(int index, double delta) {
+  ///返回真实变化的Realdelta，以时间形式
+  double safeModifyEndTimeAndDurationAfter(int index, double delta) {
     final effect = effectList[index];
     final originalDurAfter = durationBetween[index + 1];
     final pretestResult = originalDurAfter - delta;
-    final realDelta = pretestResult < 0 ? 0 : delta;
+    final realDelta = pretestResult <= 0 ? originalDurAfter : delta;
     effect.endTime += realDelta;
     durationBetween[index + 1] -= realDelta;
     notifyListeners();
-    return pretestResult < 0;
+    return realDelta;
   }
 }
 

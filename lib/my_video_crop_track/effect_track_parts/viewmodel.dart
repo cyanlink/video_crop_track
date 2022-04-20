@@ -91,6 +91,7 @@ class EffectsViewModel extends ChangeNotifier {
 }
 
 class TimelineWidth extends ChangeNotifier {
+  //TODO 这个类根本没用！对实现没有帮助，应该去除
   TimelineWidth();
   double? _timelineWidth;
 

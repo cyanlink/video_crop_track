@@ -60,48 +60,46 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                           horizontal: MediaQuery.of(context).size.width / 2),
                       sliver: SliverToBoxAdapter(
                         child: Center(
-                          child: IntrinsicWidth(
-                            child: MultiProvider(
-                              providers: [
-                                ChangeNotifierProvider<TimelineWidth>(create: (c)=>TimelineWidth()),
-                              ChangeNotifierProvider<TimelineDuration>(create: (c)=> TimelineDuration(clipCount: childCount))
-                              ],
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  NotificationListener<
-                                      SizeChangedLayoutNotification>(
-                                      onNotification: (notif) {
-                                        var width = timelineKey
-                                            .currentContext?.size?.width;
-                                        if(width != null){
-                                          //constraints.constrainWidth(width);
-                                        }
-                                        return true;
-                                      },
-                                      child: SizeChangedLayoutNotifier(
-                                        key: timelineKey,
-                                        child: SizedBox(
-                                          height: 100,
-                                          child: RowBuilder(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.max,
-                                            itemBuilder: (c, index) =>
-                                                MyCropClip(clipIndex: index),
-                                            itemCount: childCount,
-                                          ),
+                          child: MultiProvider(
+                            providers: [
+                              ChangeNotifierProvider<TimelineWidth>(create: (c)=>TimelineWidth()),
+                            ChangeNotifierProvider<TimelineDuration>(create: (c)=> TimelineDuration(clipCount: childCount))
+                            ],
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                NotificationListener<
+                                    SizeChangedLayoutNotification>(
+                                    onNotification: (notif) {
+                                      var width = timelineKey
+                                          .currentContext?.size?.width;
+                                      if(width != null){
+                                        //constraints.constrainWidth(width);
+                                      }
+                                      return true;
+                                    },
+                                    child: SizeChangedLayoutNotifier(
+                                      key: timelineKey,
+                                      child: SizedBox(
+                                        height: 100,
+                                        child: RowBuilder(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.max,
+                                          itemBuilder: (c, index) =>
+                                              MyCropClip(clipIndex: index),
+                                          itemCount: childCount,
                                         ),
                                       ),
                                     ),
-                                  Consumer<TimelineWidth>(
-                                      builder: (c, tw, child) => SizedBox(
-                                          width: tw.timelineWidth,
-                                          height: 50,
-                                          child: EffectTrack()))
-                                ],
-                              ),
+                                  ),
+                                Consumer<TimelineWidth>(
+                                    builder: (c, tw, child) => SizedBox(
+                                        //width: tw.timelineWidth,
+                                        height: 50,
+                                        child: EffectTrack()))
+                              ],
                             ),
                           ),
                         ),

@@ -49,8 +49,11 @@ class EffectTrackState extends State<EffectTrack> {
       lastTime = e.endTime;
     }
     widgets.add(
-      SizedBox(
-        width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
+      //最后一个补齐Widget，使用Expanded防止overflow问题，
+      Expanded(
+        child: SizedBox(
+          width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
+        ),
       ),
     );
     return widgets;

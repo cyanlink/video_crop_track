@@ -28,8 +28,7 @@ class EffectTrackState extends State<EffectTrack> {
           Provider.of<TimelineDuration>(context, listen: false)
               .timelineDuration),
       update: (c, dur, evm) {
-        evm!.timelineDuration = dur.timelineDuration;
-        return evm;
+        return evm!..setTimelineDuration(dur.timelineDuration);
       },
       builder: (context, child) => Row(
         children: [...itemListInRow(context)],

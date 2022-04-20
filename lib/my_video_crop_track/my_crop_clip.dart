@@ -173,6 +173,7 @@ class _MyCropClipState extends State<MyCropClip> {
           startOffset = endOffset - minBetweenOffset;
         }
       });
+      //TODO Whenever this makes duration smaller than lastEffect.duration, don't make the movement.
       context.read<TimelineDuration>()[widget.clipIndex] = clipDuration;
     }
     var realDelta = startOffset - originalOffset;

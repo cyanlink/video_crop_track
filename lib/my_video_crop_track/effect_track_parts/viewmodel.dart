@@ -45,9 +45,11 @@ class EffectsViewModel extends ChangeNotifier {
     durationBetween[index] = _timelineDuration - lastTime;
   }
 
+  get lastEffectEndTime => effectList.last.endTime;
+
   double _timelineDuration;
 
-  set timelineDuration(dur) {
+  setTimelineDuration(dur) {
     var oldTimelineDuration = _timelineDuration;
     _timelineDuration = dur;
     var diff = _timelineDuration - oldTimelineDuration;

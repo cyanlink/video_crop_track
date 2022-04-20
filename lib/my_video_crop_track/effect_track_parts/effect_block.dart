@@ -18,7 +18,7 @@ class EffectBlock extends StatefulWidget {
 class _EffectBlockState extends State<EffectBlock> {
   //TODO 此处逻辑为由于Clip有结束时间限制，现在Effect可能没有这个限制，而只受到Duration的限制
   Offset maxEndOffset = Offset(800, 0);
-  final Offset minBetweenOffset = Offset(20.0, 0);
+  final Offset minBetweenOffset = Offset(widthUnitPerSecond, 0) * minEffectDuration;
 
   bool get canExtendLeft => startOffset.dx > 0;
 

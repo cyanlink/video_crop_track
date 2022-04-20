@@ -52,7 +52,9 @@ class EffectsViewModel extends ChangeNotifier {
     _timelineDuration = dur;
     var diff = _timelineDuration - oldTimelineDuration;
     durationBetween.last += diff;
-    if (durationBetween.last < 0) durationBetween.last = 0;
+    if (durationBetween.last < 0) {
+      durationBetween.last = 0;
+    }
     notifyListeners();
   }
 
@@ -78,9 +80,8 @@ class EffectsViewModel extends ChangeNotifier {
     effect.startTime += realDelta;
     durationBetween[index] += realDelta;
     notifyListeners();
-    print("sum:${durationBetween.reduce((value, element) => value + element) +
-        effectList.map((e) => e.duration).reduce((value, element) =>
-        value + element)}, timeline duration: $_timelineDuration");
+    print(
+        "sum:${durationBetween.reduce((value, element) => value + element) + effectList.map((e) => e.duration).reduce((value, element) => value + element)}, timeline duration: $_timelineDuration");
     return realDelta;
   }
 
@@ -100,8 +101,9 @@ class EffectsViewModel extends ChangeNotifier {
 
   getSum() {
     return durationBetween.reduce((value, element) => value + element) +
-        effectList.map((e) => e.duration).reduce((value, element) => value +
-            element);
+        effectList
+            .map((e) => e.duration)
+            .reduce((value, element) => value + element);
   }
 }
 

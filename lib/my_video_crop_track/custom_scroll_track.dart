@@ -62,7 +62,6 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                         child: Center(
                           child: MultiProvider(
                             providers: [
-                              ChangeNotifierProvider<TimelineWidth>(create: (c)=>TimelineWidth()),
                             ChangeNotifierProvider<TimelineDuration>(create: (c)=> TimelineDuration(clipCount: childCount))
                             ],
                             child: Column(
@@ -94,11 +93,10 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                       ),
                                     ),
                                   ),
-                                Consumer<TimelineWidth>(
-                                    builder: (c, tw, child) => SizedBox(
+                                SizedBox(
                                         //width: tw.timelineWidth,
                                         height: 50,
-                                        child: EffectTrack()))
+                                        child: EffectTrack())
                               ],
                             ),
                           ),

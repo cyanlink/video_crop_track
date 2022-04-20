@@ -14,21 +14,10 @@ class TimelinePoc extends StatefulWidget {
 
 final keys = List.generate(20, (index) => RectGetter.createGlobalKey());
 
-class _TimelinePocState extends State<TimelinePoc>
-    with TickerProviderStateMixin {
+class _TimelinePocState extends State<TimelinePoc> {
   int? selectedIndex;
   ScrollController _controller = ScrollController();
   Rect get rect => getRect(selectedIndex);
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +47,7 @@ class _TimelinePocState extends State<TimelinePoc>
                               dimension: MediaQuery.of(context).size.width / 2,
                               child: Container(
                                   alignment: Alignment.center,
-                                  color: Colors.green,
+                                  decoration: BoxDecoration(color: Colors.green, border: Border.all(color: Colors.black)),
                                   child: Text(index.toString())),
                             ))),
                   );

@@ -37,7 +37,6 @@ class EffectTrackState extends State<EffectTrack> {
 
   List<Widget> itemListInRow(BuildContext context) {
     var effectsvm = context.watch<EffectsViewModel>();
-    var timelineWidth = context.watch<TimelineWidth>();
     final effects = effectsvm.effectList;
     List<Widget> widgets = [];
     double lastTime = 0;
@@ -49,8 +48,6 @@ class EffectTrackState extends State<EffectTrack> {
       widgets.add(customizedSpacerRow(e, effectsvm, index++));
       lastTime = e.endTime;
     }
-    var lastWidth = timelineWidth.timelineWidth - lastTime * widthUnitPerSecond;
-    if (lastWidth < 0) lastWidth = 0;
     widgets.add(
       SizedBox(
         width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,

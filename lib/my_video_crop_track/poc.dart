@@ -16,14 +16,9 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: GestureDetector(
-          onTap: (){
-
-          },
-          child: SizedBox.expand(
-            child: Center(
-              child: CustomScrollTrack(),
-            ),
+        body: SizedBox.expand(
+          child: Center(
+            child: CustomScrollTrack(),
           ),
         ),
       ),

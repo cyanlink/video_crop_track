@@ -1,4 +1,6 @@
+import 'package:boxy/flex.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_crop_track/my_video_crop_track/effect_track_parts/effect_block.dart';
 import 'package:video_crop_track/my_video_crop_track/effect_track_parts/viewmodel.dart';
@@ -21,7 +23,7 @@ class EffectTrackState extends State<EffectTrack> {
           [
             SomeEffect(0.0, 7.0),
             SomeEffect(15.0, 20.0),
-            SomeEffect(25.0, 30.0)
+            //SomeEffect(25.0, 30.0)
           ],
           Provider.of<TimelineDuration>(context, listen: false)
               .timelineDuration),
@@ -50,9 +52,10 @@ class EffectTrackState extends State<EffectTrack> {
     }
     widgets.add(
       //最后一个补齐Widget，使用Expanded防止overflow问题，
-      Expanded(
+      Dominant.flexible(
         child: SizedBox(
           width: (effectsvm.getDurationBefore(index)) * widthUnitPerSecond,
+
         ),
       ),
     );

@@ -70,7 +70,7 @@ class _EffectBlockState extends State<EffectBlock> {
                   8,
                   (index) => Container(
                         width: 100,
-                        height: 100,
+                        height: 50,
                         decoration: BoxDecoration(
                             color: Colors.green,
                             border: Border.all(color: Colors.black26)),
@@ -91,7 +91,9 @@ class _EffectBlockState extends State<EffectBlock> {
           children: [
             //leftEar
             GestureDetector(
-              behavior: HitTestBehavior.opaque,
+              onTap: (){print("leftear tapped");},
+              behavior: HitTestBehavior.translucent,
+
               //NOTE 其实并不困难，此处添加边缘滚动，等于持续在边缘长拖拽时，执行下面的正常拖动逻辑，同时修改startOffset和进行整体滚动，
               //和正常逻辑是一样的，可提取出来复用
               onHorizontalDragEnd: (detail) {
@@ -128,7 +130,7 @@ class _EffectBlockState extends State<EffectBlock> {
 
             //rightEar
             GestureDetector(
-              behavior: HitTestBehavior.opaque,
+              behavior: HitTestBehavior.translucent,
               onHorizontalDragEnd: (detail) {
                 isRightExtending = false;
               },
@@ -274,6 +276,7 @@ class _EffectBlockState extends State<EffectBlock> {
   longPressMover({required Widget child}) {
     return Consumer2<SomeEffect, EffectsViewModel>(
       builder: (context, effect, evm, _) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onHorizontalDragUpdate: (update) {
           final index = evm.effectList.indexOf(effect);
           //向左拖拽

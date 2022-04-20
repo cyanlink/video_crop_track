@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:boxy/flex.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,6 @@ import 'package:video_crop_track/my_video_crop_track/my_crop_clip.dart';
 import 'package:video_crop_track/no_fling_scroll_physics.dart';
 
 import 'effect_track_parts/effect_track.dart';
-import 'effect_track_parts/timeline_width_layout.dart';
 
 class CustomScrollTrack extends StatefulWidget {
   CustomScrollTrack({Key? key}) : super(key: key);
@@ -66,48 +66,29 @@ class _CustomScrollTrackState extends State<CustomScrollTrack>
                                     TimelineDuration(clipCount: childCount))
                           ],
                           child: Center(
-                            child: Container(
-                              alignment: Alignment.centerLeft,
-                              child: NewCompositeTimelineTrack(
-                                timeline: SizedBox(
+                            child: BoxyColumn(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                              Dominant(
+                                child: SizedBox(
                                   height: 100,
                                   child: RowBuilder(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.max,
                                     itemBuilder: (c, index) =>
                                         MyCropClip(clipIndex: index),
                                     itemCount: childCount,
                                   ),
                                 ),
-                                effectTrack: SizedBox(
-                                  //width: tw.timelineWidth,
+                              ),
+                              Flexible(
+                                child: SizedBox(
+                                    //width: tw.timelineWidth,
                                     height: 50,
                                     child: EffectTrack()),
                               ),
-
-                              /*child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 100,
-                                    child: RowBuilder(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.max,
-                                      itemBuilder: (c, index) =>
-                                          MyCropClip(clipIndex: index),
-                                      itemCount: childCount,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      //width: tw.timelineWidth,
-                                      height: 50,
-                                      child: EffectTrack())
-                                ],
-                              ),*/
-                            ),
+                            ]),
                           ),
                         ),
                       ),

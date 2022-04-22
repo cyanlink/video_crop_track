@@ -89,14 +89,22 @@ class _TimelineCompositedPocState extends State<TimelineCompositedPoc> {
                     onVerticalDragUpdate: (update) {
                       _controller.jumpTo(_controller.offset - update.delta.dy);
                     },
-                    child: Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        height: MediaQuery.of(context).size.width / 2,
-                        color: color)),
+                    child: SizedBox.fromSize(
+                        size: getDeflatedSize(layerLinks[index].leaderSize, 30),
+                      child: Container(
+
+                          color: color),
+                    )),
               ),
             );
     });
   }
 
   test() {}
+
+  Size? getDeflatedSize(Size? size, double delta){
+    if(size == null) return null;
+    return Size(size.width + 2 * delta, size.height + 2* delta);
+
+  }
 }

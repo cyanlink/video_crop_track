@@ -7,7 +7,7 @@ main() {
         // NOTE i need it on linux platform
         // since without it the mouse des not work
         scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {PointerDeviceKind.mouse},
+          dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
         ),
         home: TimelineCompositedPoc(),
       )
@@ -32,7 +32,7 @@ class _TimelineCompositedPocState extends State<TimelineCompositedPoc> {
 
   @override
   Widget build(BuildContext context) {
-    print('build');
+    //print('build');
     return Scaffold(
       body: Overlay(initialEntries: <OverlayEntry>[
         OverlayEntry(
@@ -100,7 +100,7 @@ class _TimelineCompositedPocState extends State<TimelineCompositedPoc> {
             // NOTE that i removed _controller & _controller.jumpTo,
             // and now it works even better as in previous version it was
             // not possible to "fling" from selected, hovering area
-            child: IgnorePointer(
+            child: AbsorbPointer(
               child: IntrinsicWidth(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
